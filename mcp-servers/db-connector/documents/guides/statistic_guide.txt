@@ -1,0 +1,79 @@
+# Statistical Analysis Guide for Clinical Research
+
+## 1. Overview
+Statistical analysis in clinical research requires careful consideration of study design, data characteristics, and research questions.
+
+## 2. Descriptive Statistics
+
+### 2.1 Continuous Variables
+- Central tendency: mean, median
+- Dispersion: standard deviation, interquartile range (IQR)
+- Distribution: skewness, normality tests
+
+### 2.2 Categorical Variables
+- Frequencies and percentages
+- Missing data patterns
+
+### 2.3 Table 1 (Baseline Characteristics)
+- Compare groups on key covariates
+- Report standardized mean differences (SMD)
+- SMD < 0.1 suggests good balance
+
+## 3. Comparative Analysis
+
+### 3.1 Continuous Outcomes
+- Parametric: t-test, ANOVA
+- Non-parametric: Mann-Whitney U, Kruskal-Wallis
+- Check assumptions before choosing method
+
+### 3.2 Categorical Outcomes
+- Chi-square test
+- Fisher's exact test (small samples)
+- Risk ratios, odds ratios with confidence intervals
+
+### 3.3 Time-to-Event Outcomes
+- Kaplan-Meier survival curves
+- Log-rank test for group comparison
+- Cox proportional hazards regression
+
+## 4. Confounding Adjustment
+
+### 4.1 Regression Adjustment
+- Include confounders as covariates
+- Check for multicollinearity
+- Report adjusted estimates
+
+### 4.2 Propensity Score Methods
+- Matching: 1:1, variable ratio
+- Stratification: quintiles
+- Inverse probability weighting (IPTW)
+- Assess balance after adjustment
+
+### 4.3 Instrumental Variables
+- For unmeasured confounding
+- Requires valid instrument
+
+## 5. Multiple Comparisons
+
+- Bonferroni correction (conservative)
+- False discovery rate (FDR)
+- Pre-specify primary outcome
+
+## 6. Missing Data
+
+### 6.1 Assessment
+- Missing completely at random (MCAR)
+- Missing at random (MAR)
+- Missing not at random (MNAR)
+
+### 6.2 Handling Methods
+- Complete case analysis
+- Multiple imputation
+- Sensitivity analysis for MNAR
+
+## 7. Reporting Guidelines
+
+- STROBE for observational studies
+- CONSORT for clinical trials
+- Report effect sizes with confidence intervals
+- Include sensitivity analyses

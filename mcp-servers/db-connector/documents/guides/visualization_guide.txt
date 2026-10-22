@@ -1,0 +1,99 @@
+# Data Visualization Guide for Clinical Research
+
+## 1. Overview
+Effective visualization communicates findings clearly and accurately. Choose visualization types based on data type and research question.
+
+## 2. Distribution Visualization
+
+### 2.1 Histograms
+- Show distribution of continuous variables
+- Choose appropriate bin width
+- Consider overlay for group comparison
+
+### 2.2 Box Plots
+- Show median, quartiles, outliers
+- Good for comparing groups
+- Violin plots add density information
+
+### 2.3 Density Plots
+- Smooth distribution estimate
+- Useful for comparing multiple groups
+- Kernel bandwidth affects smoothness
+
+## 3. Comparison Visualization
+
+### 3.1 Bar Charts
+- Categorical comparisons
+- Include error bars (95% CI or SE)
+- Order meaningfully
+
+### 3.2 Forest Plots
+- Multiple effect estimates
+- Show point estimates and CIs
+- Include reference line at null
+
+### 3.3 Dot Plots
+- Alternative to bar charts
+- Better for many categories
+- Show individual data points when possible
+
+## 4. Time-Series Visualization
+
+### 4.1 Line Charts
+- Trends over time
+- Include confidence bands
+- Mark important events
+
+### 4.2 Kaplan-Meier Curves
+- Survival/event-free probability
+- Include number at risk table
+- Censor marks for right-censoring
+- Log-rank p-value for comparison
+
+### 4.3 Cumulative Incidence Plots
+- When competing risks exist
+- Show all event types
+
+## 5. Relationship Visualization
+
+### 5.1 Scatter Plots
+- Two continuous variables
+- Add regression line with CI
+- Consider transparency for overlapping points
+
+### 5.2 Correlation Matrix
+- Multiple variables simultaneously
+- Use color gradients
+- Hierarchical clustering optional
+
+### 5.3 Heatmaps
+- Matrix data visualization
+- Lab values over time
+- Gene expression patterns
+
+## 6. Best Practices
+
+### 6.1 Design Principles
+- Clear, informative titles
+- Labeled axes with units
+- Appropriate color schemes (colorblind-friendly)
+- Minimize chartjunk
+
+### 6.2 Color Guidelines
+- Sequential: low to high values
+- Diverging: deviation from center
+- Categorical: distinct colors for groups
+- Avoid red-green combinations
+
+### 6.3 Accessibility
+- Sufficient contrast
+- Alternative text descriptions
+- Consider grayscale printing
+
+## 7. Common Pitfalls
+
+- Truncated axes exaggerating differences
+- 3D effects distorting perception
+- Pie charts for many categories
+- Overplotting without transparency
+- Missing uncertainty measures
