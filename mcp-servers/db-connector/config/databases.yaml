@@ -1,0 +1,73 @@
+# Unified Database MCP Service Configuration
+# Database connection and schema registry
+
+databases:
+  cdm:
+    display_name: "OMOP CDM (HIRA)"
+    description: "OMOP Common Data Model v5.3 with HIRA data"
+    connection_env: "CDM_DATABASE_URL"
+    schemas:
+      - "cdm"
+    metadata_path: "documents/cdm/Information.json"
+    data_output_root: "/app/data"
+    features:
+      concept_mapping: true
+      streaming_csv: true
+
+  kmimic:
+    display_name: "Korean MIMIC"
+    description: "Korean Multi-center ICU Intensive Care database"
+    connection_env: "KMIMIC_DATABASE_URL"
+    schemas:
+      - "km001"   # Seoul National University Hospital
+      - "km006"   # Seoul Boramae Hospital
+      - "km012"   # Seoul St. Mary's Hospital
+    metadata_path: "documents/kmimic/Information.json"
+    data_output_root: "/app/data"
+    features:
+      concept_mapping: false
+      streaming_csv: true
+
+  mimiciv:
+    display_name: "MIMIC-IV"
+    description: "MIMIC-IV Clinical Database"
+    connection_env: "MIMICIV_DATABASE_URL"
+    schemas:
+      - "mimiciv_hosp"
+      - "mimiciv_icu"
+    metadata_path: "documents/mimiciv/Information.json"
+    data_output_root: "/app/data"
+    features:
+      concept_mapping: false
+      streaming_csv: true
+
+  inspire:
+    display_name: "INSPIRE"
+    description: "VitalDB Open Dataset containing perioperative patient data"
+    connection_env: "INSPIRE_DATABASE_URL"
+    schemas:
+      - "inspire"
+    metadata_path: "documents/inspire/Information.json"
+    data_output_root: "/app/data"
+    features:
+      concept_mapping: false
+      streaming_csv: true
+
+  synthea:
+    display_name: "Synthea"
+    description: "Synthea Synthetic Patient Database"
+    connection_env: "SYNTHEA_DATABASE_URL"
+    schemas:
+      - "synthea"
+    metadata_path: "documents/synthea/Information.json"
+    data_output_root: "/app/data"
+    features:
+      concept_mapping: false
+      streaming_csv: true
+
+# Global settings
+settings:
+  default_batch_size: 10000
+  max_file_size_mb: 1024
+  job_status_db_path: "/app/dbdata/job_status.db"
+  default_query_limit: 5
