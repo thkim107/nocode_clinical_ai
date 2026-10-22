@@ -1,0 +1,36 @@
+# Git
+.git/
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+*.env
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose*.yaml
+Dockerfile
+volume_storage/
+
+# Claude Code
+.claude/
+
+# Docs
+*.MD
+*.md
