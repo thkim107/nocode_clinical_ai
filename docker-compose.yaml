@@ -1,0 +1,164 @@
+services:
+  # ============================================================
+  # Audit Database (shared logging for all services)
+  # ============================================================
+  audit-db:
+    image: postgres:16-alpine
+    container_name: audit-db
+    hostname: audit-db
+    environment:
+      POSTGRES_DB: audit_log
+      POSTGRES_USER: audit
+      POSTGRES_PASSWORD: audit_password
+    volumes:
+      - ./shared/init_audit_db.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+      - audit_db_data:/var/lib/postgresql/data
+    networks:
+      - research-ai
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U audit -d audit_log"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  audit-migrate:
+    image: postgres:16-alpine
+    environment:
+      PGPASSWORD: audit_password
+    command:
+      - psql
+      - postgresql://audit:audit_password@audit-db:5432/audit_log
+      - -v
+      - ON_ERROR_STOP=1
+      - -f
+      - /migrations/001_telemetry.sql
+    volumes:
+      - ./deploy/migrations/001_telemetry.sql:/migrations/001_telemetry.sql:ro
+    depends_on:
+      audit-db:
+        condition: service_healthy
+    networks:
+      - research-ai
+    restart: "no"
+
+  # ============================================================
+  # MCP Servers
+  # ============================================================
+  router:
+    build:
+      context: ./mcp-servers/router
+    image: mcp-router:latest
+    container_name: router
+    hostname: router
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./mcp-servers/router:/app:ro
+    depends_on:
+      - file-system
+      - ml-system
+      - docx-system
+      - db-connector
+    networks:
+      - research-ai
+
+  file-system:
+    container_name: file-system
+    hostname: file-system
+    build:
+      context: ./mcp-servers/file-system
+    image: mcp-file-system:latest
+    volumes:
+      - ./mcp-servers/volume_storage:/app/data:rw
+      - ./mcp-servers/file-system:/app/mcp-servers:ro
+    networks:
+      - research-ai
+
+  ml-system:
+    container_name: ml-system
+    hostname: ml-system
+    build:
+      context: ./mcp-servers/ml-system
+    image: mcp-ml-system:latest
+    volumes:
+      - ./mcp-servers/volume_storage:/app/data:rw
+      - ./mcp-servers/ml-system:/app/mcp-servers:ro
+    networks:
+      - research-ai
+
+  docx-system:
+    container_name: docx-system
+    hostname: docx-system
+    build:
+      context: ./mcp-servers/docx-system
+    image: mcp-docx-system:latest
+    volumes:
+      - ./mcp-servers/volume_storage:/app/data:rw
+      - ./mcp-servers/docx-system:/app/mcp-servers:ro
+    environment:
+      - DOCX_BASE_DIR=/app/data
+    networks:
+      - research-ai
+
+  db-connector:
+    container_name: db-connector
+    hostname: db-connector
+    build:
+      context: ./mcp-servers/db-connector
+    image: db-connector:260203
+    ports:
+      - "8005:8000"
+    volumes:
+      - ./mcp-servers/volume_storage:/app/data:rw
+    env_file:
+      - ./mcp-servers/db-connector/.env
+    networks:
+      - research-ai
+
+  # ============================================================
+  # Platform (React frontend + API: files, chat, research)
+  # ============================================================
+  platform:
+    container_name: platform
+    hostname: platform
+    build:
+      context: ./platform
+      additional_contexts:
+        shared: ./shared
+    image: platform:latest
+    restart: unless-stopped
+    ports:
+      - "8003:8000"
+    volumes:
+      - ./mcp-servers/volume_storage:/app/data:rw
+      - platform_state:/app/state
+    env_file:
+      - ./platform/backend/.env
+    environment:
+      - PROMPT_LANG=${PROMPT_LANG:-en}
+      - APP_VERSION=${APP_VERSION:-local}
+      - PROMPT_VERSION=${PROMPT_VERSION:-unknown}
+      - TELEMETRY_HMAC_KEY=${TELEMETRY_HMAC_KEY:-local-development-only}
+      - AUDIT_DB_URL=postgresql://audit:audit_password@audit-db:5432/audit_log
+    depends_on:
+      audit-migrate:
+        condition: service_completed_successfully
+      router:
+        condition: service_started
+    networks:
+      - research-ai
+
+# ============================================================
+# Networks
+# ============================================================
+networks:
+  research-ai:
+    external: true
+
+# ============================================================
+# Volumes
+# ============================================================
+volumes:
+  audit_db_data:
+  platform_state:

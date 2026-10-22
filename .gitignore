@@ -1,0 +1,34 @@
+# Secrets
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+
+# Runtime data / experiment outputs (mounted into containers)
+mcp-servers/volume_storage/
+platform/backend/state/
+platform/frontend/node_modules/
+platform/backend/static/
+
+# Local-only
+.claude/
+mcp-servers/docker-compose-private.yaml
+bundle.zip
+*.zip
+*.tar
+dist/
+.DS_Store
+
+# Local deployment / docs (k3s manifests, build·push scripts, design notes)
+deploy/
+scripts/
+docs/
