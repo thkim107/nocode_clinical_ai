@@ -1,0 +1,124 @@
+{
+  "synthea": {
+    "Description": "Synthea is a synthetic EHR dataset with realistic, privacy-preserving clinical records (patients, encounters, diagnoses, medications, procedures, claims, etc.).",
+    "Tables": {
+      "allergies": {
+        "Description": "Allergy and intolerance records for patients.",
+        "Fields": {
+          "START": {"is_pk": false, "is_fk": false, "relation": "", "description": "Date the allergy was diagnosed (YYYY-MM-DD). Required."},
+          "STOP": {"is_pk": false, "is_fk": false, "relation": "", "description": "Date the allergy ended (YYYY-MM-DD), if applicable."},
+          "PATIENT": {"is_pk": false, "is_fk": false, "relation": "", "description": "Patient identifier (references patients.ID). Required."},
+          "ENCOUNTER": {"is_pk": false, "is_fk": false, "relation": "", "description": "Encounter identifier (references encounters.ID). Required."},
+          "CODE": {"is_pk": false, "is_fk": false, "relation": "", "description": "Allergy code (string). Required."},
+          "DESCRIPTION": {"is_pk": false, "is_fk": false, "relation": "", "description": "Allergy description. Required."}
+        }
+      },
+      "careplans": {
+        "Description": "Care plan episodes and reasons.",
+        "Fields": {
+          "ID": {"is_pk": false, "is_fk": false, "relation": "", "description": "Care plan identifier (UUID). Multiple treatments can share the same ID. Required."},
+          "START": {"is_pk": false, "is_fk": false, "relation": "", "description": "Start date (YYYY-MM-DD). Required."},
+          "STOP": {"is_pk": false, "is_fk": false, "relation": "", "description": "End date (YYYY-MM-DD), if applicable."},
+          "PATIENT": {"is_pk": false, "is_fk": false, "relation": "", "description": "Patient identifier (references patients.ID). Required."},
+          "ENCOUNTER": {"is_pk": false, "is_fk": false, "relation": "", "description": "Encounter identifier (references encounters.ID). Required."},
+          "CODE": {"is_pk": false, "is_fk": false, "relation": "", "description": "SNOMED-CT treatment code. May be repeated within the same care plan. Required."},
+          "DESCRIPTION": {"is_pk": false, "is_fk": false, "relation": "", "description": "Care plan description. Required."},
+          "REASONCODE": {"is_pk": false, "is_fk": false, "relation": "", "description": "SNOMED-CT diagnosis code addressed by plan. Optional."},
+          "REASONDESCRIPTION": {"is_pk": false, "is_fk": false, "relation": "", "description": "Reason code description. Optional."}
+        }
+      },
+      "conditions": {
+        "Description": "Diagnosed conditions for patients.",
+        "Fields": {
+          "START": {"is_pk": false, "is_fk": false, "relation": "", "description": "Date diagnosed (YYYY-MM-DD). Required."},
+          "STOP": {"is_pk": false, "is_fk": false, "relation": "", "description": "Resolution date (YYYY-MM-DD), if applicable."},
+          "PATIENT": {"is_pk": false, "is_fk": false, "relation": "", "description": "Patient identifier (references patients.ID). Required."},
+          "ENCOUNTER": {"is_pk": false, "is_fk": false, "relation": "", "description": "Encounter identifier (references encounters.ID). Required."},
+          "CODE": {"is_pk": false, "is_fk": false, "relation": "", "description": "SNOMED-CT diagnosis code. Required."},
+          "DESCRIPTION": {"is_pk": false, "is_fk": false, "relation": "", "description": "Condition description. Required."}
+        }
+      },
+      "encounters": {
+        "Description": "Patient encounters (visits) with organizations and providers.",
+        "Fields": {
+          "ID": {"is_pk": true, "is_fk": false, "relation": "", "description": "Primary key (UUID). Required."},
+          "DATE": {"is_pk": false, "is_fk": false, "relation": "", "description": "Start datetime (yyyy-MM-dd'T'HH:mm'Z'). Required."},
+          "PATIENT": {"is_pk": false, "is_fk": false, "relation": "", "description": "Patient identifier (references patients.ID). Required."},
+          "CODE": {"is_pk": false, "is_fk": false, "relation": "", "description": "SNOMED-CT encounter code. Required."},
+          "DESCRIPTION": {"is_pk": false, "is_fk": false, "relation": "", "description": "Encounter type description. Required."},
+          "REASONCODE": {"is_pk": false, "is_fk": false, "relation": "", "description": "SNOMED-CT reason diagnosis if targeted. Optional."},
+          "REASONDESCRIPTION": {"is_pk": false, "is_fk": false, "relation": "", "description": "Reason description. Optional."}
+        }
+      },
+      "immunizations": {
+        "Description": "Immunization administrations during encounters.",
+        "Fields": {
+          "DATE": {"is_pk": false, "is_fk": false, "relation": "", "description": "Administration datetime (yyyy-MM-dd'T'HH:mm'Z'). Required."},
+          "PATIENT": {"is_pk": false, "is_fk": false, "relation": "", "description": "Patient identifier (references patients.ID). Required."},
+          "ENCOUNTER": {"is_pk": false, "is_fk": false, "relation": "", "description": "Encounter identifier (references encounters.ID). Required."},
+          "CODE": {"is_pk": false, "is_fk": false, "relation": "", "description": "CVX immunization code. Required."},
+          "DESCRIPTION": {"is_pk": false, "is_fk": false, "relation": "", "description": "Immunization description. Required."}
+        }
+      },
+      "medications": {
+        "Description": "Medication prescriptions with costs and reasons.",
+        "Fields": {
+          "START": {"is_pk": false, "is_fk": false, "relation": "", "description": "Prescription datetime (yyyy-MM-dd'T'HH:mm'Z'). Required."},
+          "STOP": {"is_pk": false, "is_fk": false, "relation": "", "description": "End datetime (yyyy-MM-dd'T'HH:mm'Z'), if applicable."},
+          "PATIENT": {"is_pk": false, "is_fk": false, "relation": "", "description": "Patient identifier (references patients.ID). Required."},
+          "ENCOUNTER": {"is_pk": false, "is_fk": false, "relation": "", "description": "Encounter identifier (references encounters.ID). Required."},
+          "CODE": {"is_pk": false, "is_fk": false, "relation": "", "description": "RxNorm medication code. Required."},
+          "DESCRIPTION": {"is_pk": false, "is_fk": false, "relation": "", "description": "Medication description. Required."},
+          "REASONCODE": {"is_pk": false, "is_fk": false, "relation": "", "description": "SNOMED-CT diagnosis reason. Optional."},
+          "REASONDESCRIPTION": {"is_pk": false, "is_fk": false, "relation": "", "description": "Reason description. Optional."}
+        }
+      },
+      "observations": {
+        "Description": "Observations and lab measurements (LOINC) with values and units.",
+        "Fields": {
+          "DATE": {"is_pk": false, "is_fk": false, "relation": "", "description": "Datetime of observation (yyyy-MM-dd'T'HH:mm'Z'). Required."},
+          "PATIENT": {"is_pk": false, "is_fk": false, "relation": "", "description": "Patient identifier (references patients.ID). Required."},
+          "ENCOUNTER": {"is_pk": false, "is_fk": false, "relation": "", "description": "Encounter identifier (references encounters.ID). Required."},
+          "CODE": {"is_pk": false, "is_fk": false, "relation": "", "description": "LOINC code. Required."},
+          "DESCRIPTION": {"is_pk": false, "is_fk": false, "relation": "", "description": "Observation/lab description. Required."},
+          "VALUE": {"is_pk": false, "is_fk": false, "relation": "", "description": "Recorded value (text or numeric). Required."},
+          "UNITS": {"is_pk": false, "is_fk": false, "relation": "", "description": "Units of measure. Optional."}
+        }
+      },
+      "patients": {
+        "Description": "Synthetic patients with demographics and finances.",
+        "Fields": {
+          "ID": {"is_pk": true, "is_fk": false, "relation": "", "description": "Primary key (UUID). Required."},
+          "BIRTHDATE": {"is_pk": false, "is_fk": false, "relation": "", "description": "Birth date (YYYY-MM-DD). Required."},
+          "DEATHDATE": {"is_pk": false, "is_fk": false, "relation": "", "description": "Death date (YYYY-MM-DD), if applicable."},
+          "SSN": {"is_pk": false, "is_fk": false, "relation": "", "description": "Social Security identifier. Required."},
+          "DRIVERS": {"is_pk": false, "is_fk": false, "relation": "", "description": "Driver's license identifier. Optional."},
+          "PASSPORT": {"is_pk": false, "is_fk": false, "relation": "", "description": "Passport identifier. Optional."},
+          "PREFIX": {"is_pk": false, "is_fk": false, "relation": "", "description": "Name prefix (Mr./Mrs./Dr./...). Optional."},
+          "FIRST": {"is_pk": false, "is_fk": false, "relation": "", "description": "First name. Required."},
+          "LAST": {"is_pk": false, "is_fk": false, "relation": "", "description": "Last name. Required."},
+          "SUFFIX": {"is_pk": false, "is_fk": false, "relation": "", "description": "Name suffix (PhD/MD/JD/...). Optional."},
+          "MAIDEN": {"is_pk": false, "is_fk": false, "relation": "", "description": "Maiden name. Optional."},
+          "MARITAL": {"is_pk": false, "is_fk": false, "relation": "", "description": "Marital status ('M' or 'S'). Optional."},
+          "RACE": {"is_pk": false, "is_fk": false, "relation": "", "description": "Primary race. Required."},
+          "ETHNICITY": {"is_pk": false, "is_fk": false, "relation": "", "description": "Primary ethnicity. Required."},
+          "GENDER": {"is_pk": false, "is_fk": false, "relation": "", "description": "Gender ('M' or 'F'). Required."},
+          "BIRTHPLACE": {"is_pk": false, "is_fk": false, "relation": "", "description": "Birthplace town. Required."},
+          "ADDRESS": {"is_pk": false, "is_fk": false, "relation": "", "description": "Street address (no commas/newlines). Required."}
+        }
+      },
+      "procedures": {
+        "Description": "Procedures performed with timing, codes, and costs.",
+        "Fields": {
+          "DATE": {"is_pk": false, "is_fk": false, "relation": "", "description": "Start datetime (yyyy-MM-dd'T'HH:mm'Z'). Prior to v3.0.0 this column was named 'Date'. Required."},
+          "PATIENT": {"is_pk": false, "is_fk": false, "relation": "", "description": "Patient identifier (references patients.ID). Required."},
+          "ENCOUNTER": {"is_pk": false, "is_fk": false, "relation": "", "description": "Encounter identifier (references encounters.ID). Required."},
+          "CODE": {"is_pk": false, "is_fk": false, "relation": "", "description": "SNOMED-CT procedure code. Required."},
+          "DESCRIPTION": {"is_pk": false, "is_fk": false, "relation": "", "description": "Procedure description. Required."},
+          "REASONCODE": {"is_pk": false, "is_fk": false, "relation": "", "description": "SNOMED-CT diagnosis reason. Optional."},
+          "REASONDESCRIPTION": {"is_pk": false, "is_fk": false, "relation": "", "description": "Reason description. Optional."}
+        }
+      }
+    }
+  }
+}
