@@ -1,0 +1,8 @@
+mcp>=1.8.0,<2   # 2.x 에서 mcp.server.fastmcp 제거됨(MCPServer 로 개명) — v1 API 유지
+python-dotenv>=1.1.0
+nest-asyncio>=1.6.0
+PyPDF2>=3.0.1
+pillow>=11.2.1
+pandas>=2.2.3
+fastapi>=0.115.8
+uvicorn>=0.32.0
