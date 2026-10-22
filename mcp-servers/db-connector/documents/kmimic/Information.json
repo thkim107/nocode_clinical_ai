@@ -1,0 +1,1776 @@
+{
+  "kmimic": {
+    "Description": "A comprehensive clinical database covering patients admitted to the ICU, spanning their entire hospitalization from admission to discharge. It includes demographic and admission records, hospital-wide diagnoses, procedures, laboratory and prescription data, high-resolution ICU monitoring and interventions, emergency department encounters with triage and medication history, as well as institutional hospital information.",
+    "Tables": {
+      "admissions": {
+        "Description": "Information about a patient’s admission, discharge, admission types/locations, and mortality indicators.",
+        "Fields": {
+          "subject_id": {
+            "is_pk": true,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique identifier for a hospital admission."
+          },
+          "admittime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Date and time registered for admission."
+          },
+          "dischtime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Date and time registered for discharge."
+          },
+          "deathtime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Date and time of patient's death (if applicable)."
+          },
+          "admission_type": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Type of admission (e.g., Emergency department, Outpatient department, Admission, Neonate)."
+          },
+          "admission_location": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Patient’s location before arrival (e.g., last ER location; otherwise NULL)."
+          },
+          "discharge_location": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Patient’s location after discharge (home, nursing home, other hospital, died, etc.)."
+          },
+          "insurance": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Patient’s insurance information."
+          },
+          "marital_status": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Patient’s current marital status (e.g., married, single, widowed, etc.)."
+          },
+          "edregtime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "ER arrival date/time for admissions via the ER."
+          },
+          "edouttime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "ER discharge date/time for admissions via the ER."
+          },
+          "hospital_expire_flag": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "In-hospital mortality indicator (1=expired, 0=alive at discharge)."
+          },
+          "icu_expire_flag": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "ICU mortality indicator (1=expired during ICU stay, 0=otherwise)."
+          },
+          "nationality": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Patient’s nationality (English country names)."
+          },
+          "hospital_id": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Institution/hospital code (per participating site)."
+          }
+        }
+      },
+      "patients": {
+        "Description": "Demographics consistent across a patient’s lifetime; includes gender, de-identified age/year anchors, and death date (if present).",
+        "Fields": {
+          "subject_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique patient identifier."
+          },
+          "sex": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Patient gender (M/F)."
+          },
+          "anchor_age": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Patient age at time of admission; unit varies (days/months/years, with 90+ capped)."
+          },
+          "anchor_year": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "De-identified patient’s admission year."
+          },
+          "anchor_year_group": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Year group categorized by actual admission year."
+          },
+          "dod": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Date/time of death (if known)."
+          }
+        }
+      },
+      "transfers": {
+        "Description": "Detailed unit/ward transfer timeline across the hospital stay.",
+        "Fields": {
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "transfer_seq": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Sequence number for each movement in chronological order."
+          },
+          "transfer_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique key for each movement (HADM_ID + TRANSFER_SEQ)."
+          },
+          "eventtype": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Movement type: ed/admit/transfer/discharge."
+          },
+          "careunit": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Ward/department code at each step."
+          },
+          "intime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Arrival date/time to the unit/ward."
+          },
+          "outtime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Departure date/time from the unit/ward."
+          }
+        }
+      },
+      "diagnoses_icd": {
+        "Description": "ICD diagnoses associated with hospitalizations; includes sequence within ICU context and ICU-origin flag.",
+        "Fields": {
+          "subject_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "seq_num": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Sequence number for ICU-related diagnoses (main, date, name ordering)."
+          },
+          "icd_code": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "",
+            "description": "ICD diagnosis code (ICD-9/ICD-10)."
+          },
+          "icd_version": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "",
+            "description": "ICD code version."
+          },
+          "itemid": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "",
+            "description": "Local diagnosis code used by the institution."
+          },
+          "is_icu": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "",
+            "description": "Whether diagnosis issued by treating ICU department (Y/N)."
+          }
+        }
+      },
+      "d_labitems": {
+        "Description": "Dictionary of laboratory test items.",
+        "Fields": {
+          "itemid": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique lab test code."
+          },
+          "label": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Test name."
+          },
+          "fluid": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Specimen name/description."
+          },
+          "category": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Test classification hierarchy."
+          },
+          "edi_code": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Insurance EDI code (or KMM90000 when not billed)."
+          }
+        }
+      },
+      "d_testitems": {
+        "Description": "Dictionary for imaging/DICOM test items.",
+        "Fields": {
+          "itemid": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Imaging test code."
+          },
+          "label": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Imaging exam name."
+          },
+          "category": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Imaging classification hierarchy."
+          },
+          "edi_code": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Insurance EDI code (KMM90000 if not billed)."
+          }
+        }
+      },
+      "emar": {
+        "Description": "Medication administrations (nursing actions and clinical observation entries) over the entire hospitalization.",
+        "Fields": {
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "emar_type": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Source type of administration info (Acting/Note)."
+          },
+          "emar_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique key for administration history."
+          },
+          "emar_seq": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Chronological sequence within source."
+          },
+          "poe_id": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Prescription ID."
+          },
+          "pharmacy_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "",
+            "description": "Medication order detail ID."
+          },
+          "charttime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Administration date/time."
+          },
+          "medication": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Administered medication name."
+          },
+          "event_txt": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Outcome/status (Administered / Not given / Held / Finished etc.)."
+          },
+          "storetime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Timestamp when recorded in HIS."
+          },
+          "itemid": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "",
+            "description": "Medication code; links to PRESCRIPTIONS.itemid where applicable."
+          },
+          "stay_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "icustays.stay_id",
+            "description": "ICU stay ID if order occurred during ICU stay; else NULL."
+          }
+        }
+      },
+      "emar_detail": {
+        "Description": "Per-administration details including notes, on/off flags, and infusion rates.",
+        "Fields": {
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "emar_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "emar.emar_id",
+            "description": "Links to EMAR."
+          },
+          "emar_seq": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Sequence number within EMAR entry."
+          },
+          "parent_field_ordinal": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Sequence per prescription (within a drug bundle)."
+          },
+          "pharmacy_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "",
+            "description": "Medication order detail ID."
+          },
+          "note_txt": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Free-text notes from observation records."
+          },
+          "on_off": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Medication start/end indicator."
+          },
+          "infusion_rate_day": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Daily infusion rate (if recorded)."
+          },
+          "infusion_rate_hr": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Hourly infusion rate (if recorded)."
+          },
+          "infusion_rate_min": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Minute infusion rate (if recorded)."
+          },
+          "itemid": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "",
+            "description": "Medication code."
+          },
+          "stay_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "icustays.stay_id",
+            "description": "ICU stay ID if applicable."
+          }
+        }
+      },
+      "labevents": {
+        "Description": "Results of laboratory measurements (hematology, chemistry, blood gas, etc.).",
+        "Fields": {
+          "labevent_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique key for each lab result."
+          },
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "specimen_id": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Specimen identifier (if specimen-based)."
+          },
+          "itemid": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "d_labitems.itemid",
+            "description": "Lab test code; links to D_LABITEMS."
+          },
+          "charttime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Time point representing the patient’s state for the result (e.g., specimen collection time)."
+          },
+          "storetime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Result entry time (interpretation/result time)."
+          },
+          "value": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Raw text result."
+          },
+          "valuenum": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Numeric result (if numeric)."
+          },
+          "valueuom": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Result unit."
+          },
+          "ref_range_lower": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Reference range lower bound (text)."
+          },
+          "ref_range_upper": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Reference range upper bound (text)."
+          },
+          "flag": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Abnormal flag (e.g., 'abnormal' or NULL)."
+          },
+          "comments": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Remarks."
+          },
+          "stay_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "icustays.stay_id",
+            "description": "ICU stay ID if ordered during an ICU stay; else NULL."
+          }
+        }
+      },
+      "microbiologyevents": {
+        "Description": "Microbiology results including cultures, organisms, sensitivities, and related metadata.",
+        "Fields": {
+          "microevent_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique key for microbiology test detail."
+          },
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "micro_specimen_id": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Specimen number identifier."
+          },
+          "chartdate": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Specimen collection date."
+          },
+          "charttime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Specimen collection date/time."
+          },
+          "spec_itemid": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Specimen code."
+          },
+          "spec_type_desc": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Specimen name/description."
+          },
+          "test_seq": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Culture result sequence number (1..n)."
+          },
+          "storedate": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Interpretation date."
+          },
+          "storetime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Interpretation date/time."
+          },
+          "test_itemid": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "",
+            "description": "Test code."
+          },
+          "test_name": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Test name."
+          },
+          "org_itemid": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Organism identifier code."
+          },
+          "org_name": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Organism name (result)."
+          },
+          "isolate_num": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Colony sequence number."
+          },
+          "quantity": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Colony count content (text)."
+          },
+          "ab_itemid": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Antibiotic identifier code."
+          },
+          "ab_name": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Antibiotic name."
+          },
+          "dilution_text": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Diluent name / numeric content (text)."
+          },
+          "dilution_comparison": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Diluent comparison operator (e.g., <=, =, =>)."
+          },
+          "dilution_value": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Diluent quantity / diameter value (text)."
+          },
+          "interpretation": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Susceptibility interpretation (S/R/I/P/null)."
+          },
+          "comments": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Remarks."
+          },
+          "orderdate": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Order date."
+          },
+          "order_comments": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Order remarks."
+          },
+          "stay_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "icustays.stay_id",
+            "description": "ICU stay ID if ordered during ICU stay; else NULL."
+          }
+        }
+      },
+      "prescriptions": {
+        "Description": "Medication order entries (prescriptions).",
+        "Fields": {
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "pharmacy_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique key for medication order detail."
+          },
+          "starttime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Prescription start date/time."
+          },
+          "stoptime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Prescription stop date/time."
+          },
+          "drug_type": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Medication composition type: MAIN/BASE/NULL."
+          },
+          "drug": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Medication name."
+          },
+          "gsn": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "ATC international code (if available)."
+          },
+          "ndc": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Insurance EDI code (KMM999999 if non-covered)."
+          },
+          "prod_strength": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Dose/frequency/duration text at time of order."
+          },
+          "form_rx": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Administration unit at order time."
+          },
+          "dose_val_rx": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Dose content."
+          },
+          "dose_unit_rx": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Dose unit."
+          },
+          "form_val_disp": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Medication specification value."
+          },
+          "form_unit_disp": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Medication specification unit."
+          },
+          "doses_per_24_hrs": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Dose normalized to 24 hours (if computed)."
+          },
+          "route": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Administration route (standardized set of ~20)."
+          },
+          "itemid": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "",
+            "description": "Medication code."
+          },
+          "stay_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "icustays.stay_id",
+            "description": "ICU stay ID if ordered during ICU stay; else NULL."
+          }
+        }
+      },
+      "procedures_icd": {
+        "Description": "ICD-coded procedures and surgery scheduling context.",
+        "Fields": {
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": true,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "seq_num": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Surgery sequence (1,2,3,…) in scheduled order."
+          },
+          "chartdate": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Surgery date."
+          },
+          "icd_code": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "",
+            "description": "ICD procedure code (e.g., 77.89)."
+          },
+          "icd_version": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "",
+            "description": "ICD version (e.g., ICD9CM)."
+          },
+          "itemid": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "",
+            "description": "Local surgery name code."
+          },
+          "stay_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "icustays.stay_id",
+            "description": "ICU stay ID if within ICU period; else NULL."
+          }
+        }
+      },
+      "services": {
+        "Description": "Department/service labels under which the patient was admitted/transferred.",
+        "Fields": {
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": true,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "transfertime": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Transfer application start date/time."
+          },
+          "prev_service": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Previous department code."
+          },
+          "curr_service": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Current department code."
+          }
+        }
+      },
+      "testevents": {
+        "Description": "Imaging test events with unique DICOM file paths.",
+        "Fields": {
+          "testevent_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique key for each imaging event."
+          },
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "itemid": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "d_testitems.itemid",
+            "description": "Imaging test code; links to D_TESTITEMS."
+          },
+          "charttime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Patient time context for imaging (e.g., image acquisition)."
+          },
+          "storetime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Result entry/interpretation time."
+          },
+          "file_path": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "DICOM file path on central platform (anonymized pattern for ICU-issued exams)."
+          },
+          "stay_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "icustays.stay_id",
+            "description": "ICU stay ID if ordered during ICU stay; else NULL."
+          }
+        }
+      },
+      "chartevents": {
+        "Description": "All charted clinical observations recorded in ICU context.",
+        "Fields": {
+          "chartevent_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique key for each clinical observation."
+          },
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "stay_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "icustays.stay_id",
+            "description": "ICU stay identifier; links to ICUSTAYS."
+          },
+          "charttime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "When the observation was recorded."
+          },
+          "storetime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "When the observation was stored."
+          },
+          "itemid": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "d_items.itemid",
+            "description": "Item identifier recorded; links to D_ITEMS."
+          },
+          "value": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Original recorded content (text)."
+          },
+          "valuenum": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Numeric value (if numeric)."
+          },
+          "valueuom": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Units for value."
+          },
+          "warning": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Alert indicator."
+          }
+        }
+      },
+      "datetimeevents": {
+        "Description": "Nursing logs and activity records (date/time-centric entries).",
+        "Fields": {
+          "datetimeevent_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique key for nursing log/activity record."
+          },
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "stay_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "icustays.stay_id",
+            "description": "ICU stay identifier; links to ICUSTAYS."
+          },
+          "charttime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "When the observation was recorded."
+          },
+          "storetime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "When the observation was stored."
+          },
+          "itemid": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "d_items.itemid",
+            "description": "Item identifier; links to D_ITEMS."
+          },
+          "value": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Recorded content (text)."
+          },
+          "valueuom": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Recorded unit (if applicable)."
+          },
+          "warning": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Alert indicator."
+          }
+        }
+      },
+      "d_items": {
+        "Description": "Dictionary describing ITEMIDs used across ICU event tables.",
+        "Fields": {
+          "itemid": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique item identifier."
+          },
+          "label": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Item name/label."
+          },
+          "abbreviation": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Abbreviation (if present)."
+          },
+          "linksto": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Event table name where the item is used (e.g., chartevents, inputevents)."
+          },
+          "category": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Item classification."
+          },
+          "unitname": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Item unit (e.g., L/min)."
+          },
+          "param_type": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Parameter type (e.g., Coded Text, Text, Real Number)."
+          },
+          "lownormalvalue": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Lower normal limit (if applicable)."
+          },
+          "highnormalvalue": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Upper normal limit (if applicable)."
+          }
+        }
+      },
+      "icustays": {
+        "Description": "ICU admissions/discharges with care unit codes and LOS (length of stay) and post-op flag.",
+        "Fields": {
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "stay_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "ICU stay identifier (unique)."
+          },
+          "first_careunit": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Admission ward/department code."
+          },
+          "last_careunit": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Discharge ward/department code."
+          },
+          "intime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "ICU admission date/time."
+          },
+          "outtime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "ICU discharge date/time."
+          },
+          "los": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Length of stay (outtime - intime)."
+          },
+          "op_flag": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Post-surgery ICU admission flag (0/1/2 as defined)."
+          }
+        }
+      },
+      "inputevents": {
+        "Description": "Continuous/intermittent infusions and related settings during ICU stay.",
+        "Fields": {
+          "inputevent_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique key for an intake/infusion record."
+          },
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "icustay_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "icustays.stay_id",
+            "description": "ICU stay identifier; links to ICUSTAYS."
+          },
+          "starttime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Infusion start date/time."
+          },
+          "endtime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Infusion end date/time."
+          },
+          "itemid": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "d_items.itemid",
+            "description": "Item identifier recorded; links to D_ITEMS."
+          },
+          "amount": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Dose amount (free text if recorded as text)."
+          },
+          "amountuom": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Dose unit."
+          },
+          "rate": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Infusion rate (free text if recorded as text)."
+          },
+          "rateuom": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Infusion rate unit."
+          },
+          "patientweight": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Patient weight at/near recording time (carry-forward if not measured at starttime)."
+          },
+          "storetime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Record storage date/time."
+          },
+          "cgid": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Caregiver ID (if available)."
+          },
+          "orderid": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Order identifier."
+          },
+          "linkorderid": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Linked order identifier."
+          }
+        }
+      },
+      "outputevents": {
+        "Description": "Patient outputs (e.g., urine, drains) during ICU stay.",
+        "Fields": {
+          "outputevent_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique key for an output record."
+          },
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "icustay_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "icustays.stay_id",
+            "description": "ICU stay identifier; links to ICUSTAYS."
+          },
+          "charttime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Record date/time."
+          },
+          "storetime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Storage date/time."
+          },
+          "itemid": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "d_items.itemid",
+            "description": "Item identifier; links to D_ITEMS."
+          },
+          "value": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Item value (text)."
+          },
+          "valueuom": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Item unit."
+          },
+          "warning": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Alert indicator."
+          }
+        }
+      },
+      "procedureevents": {
+        "Description": "Procedures/surgeries and structured results/timings in ICU context.",
+        "Fields": {
+          "procedureevent_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique key for a procedure record."
+          },
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "hadm_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "admissions.hadm_id",
+            "description": "Admission ID; links to ADMISSIONS."
+          },
+          "stay_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "icustays.stay_id",
+            "description": "ICU stay identifier; links to ICUSTAYS."
+          },
+          "starttime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Procedure start date/time; OR/Anesthesia/PACU timing encoded via ITEMID combinations."
+          },
+          "endtime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Procedure end date/time."
+          },
+          "storetime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Order issue date/time."
+          },
+          "itemid": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "d_items.itemid",
+            "description": "Item identifier (e.g., P_Surgery, P_Test, P_OR, P_Anesthesia, P_PACU)."
+          },
+          "value": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Structured test results (non-image/non-form)."
+          },
+          "valueuom": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Result unit (if applicable)."
+          },
+          "location": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Test site name."
+          },
+          "locationcategory": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Test site classification."
+          },
+          "ordercategoryname": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Top-level order category."
+          },
+          "secondaryordercategoryname": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Second-level order category."
+          },
+          "ordercategorydescription": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Order category description."
+          },
+          "patientweight": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Patient weight at/near event time (carry-forward if needed)."
+          }
+        }
+      },
+      "edstay": {
+        "Description": "Primary tracking table for emergency department visits; arrival and departure times.",
+        "Fields": {
+          "subject_id": {
+            "is_pk": false,
+            "is_fk": true,
+            "relation": "patients.subject_id",
+            "description": "Unique patient identifier; links to PATIENTS."
+          },
+          "stay_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Emergency department stay identifier (unique)."
+          },
+          "intime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "ED arrival date/time."
+          },
+          "outtime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "ED discharge date/time."
+          },
+          "sex": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Gender code."
+          },
+          "dx1": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Primary ED diagnosis name."
+          },
+          "dx1_icd": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Primary ED diagnosis ICD code."
+          },
+          "dx2": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Second diagnosis name (nullable)."
+          },
+          "dx2_icd": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Second diagnosis ICD code (nullable)."
+          },
+          "dx3": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Third diagnosis name (nullable)."
+          },
+          "dx3_icd": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Third diagnosis ICD code (nullable)."
+          },
+          "dx4": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Fourth diagnosis name (nullable)."
+          },
+          "dx4_icd": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Fourth diagnosis ICD code (nullable)."
+          },
+          "dx5": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Fifth diagnosis name (nullable)."
+          },
+          "dx5_icd": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Fifth diagnosis ICD code (nullable)."
+          },
+          "dx6": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Sixth diagnosis name (nullable)."
+          },
+          "dx6_icd": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Sixth diagnosis ICD code (nullable)."
+          },
+          "dx7": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Seventh diagnosis name (nullable)."
+          },
+          "dx7_icd": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Seventh diagnosis ICD code (nullable)."
+          },
+          "dx8": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Eighth diagnosis name (nullable)."
+          },
+          "dx8_icd": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Eighth diagnosis ICD code (nullable)."
+          },
+          "dx9": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Ninth diagnosis name (nullable)."
+          },
+          "dx9_icd": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Ninth diagnosis ICD code (nullable)."
+          }
+        }
+      },
+      "medrecon": {
+        "Description": "Medication reconciliation on ED admission (free-text medication list; ATC/NDC may be null).",
+        "Fields": {
+          "stay_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "edstay.stay_id",
+            "description": "ED stay identifier; links to EDSTAY."
+          },
+          "charttime": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Record date/time."
+          },
+          "name": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Medication free text captured at triage/admission."
+          },
+          "gsn": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "ATC code (if available; often null)."
+          },
+          "ndc": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "EDI code (if available; often null)."
+          }
+        }
+      },
+      "triage": {
+        "Description": "Initial triage vitals and acuity.",
+        "Fields": {
+          "stay_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "edstay.stay_id",
+            "description": "ED stay identifier; links to EDSTAY."
+          },
+          "temp": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Body temperature at ED visit."
+          },
+          "hr": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Heart rate at ED visit."
+          },
+          "rr": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Respiratory rate at ED visit."
+          },
+          "sao2": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Oxygen saturation at ED visit (string)."
+          },
+          "pain": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Pain score (string)."
+          },
+          "acuity": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Triage acuity score (numeric)."
+          },
+          "sbp": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Systolic blood pressure."
+          },
+          "dbp": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "Diastolic blood pressure."
+          }
+        }
+      },
+      "hospital": {
+        "Description": "Information for the collected hospital",
+        "Fields": {
+          "hospital_id": {
+            "is_pk": true,
+            "is_fk": false,
+            "relation": "",
+            "description": "Unique hospital identifier."
+          },
+          "status": {
+            "is_pk": false,
+            "is_fk": false,
+            "relation": "",
+            "description": "binary identifier for the collected hospital"
+          }
+        }
+      }
+    }
+  }
+}
