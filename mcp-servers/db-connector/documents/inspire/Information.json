@@ -1,0 +1,91 @@
+{
+  "inspire": {
+    "Description": "VitalDB Open Dataset containing perioperative patient data including operations, diagnoses, vital signs, laboratory results, and medications",
+    "Tables": {
+      "operations": {
+        "Description": "Main operations table containing patient demographics, operation details, and timing information for surgical procedures",
+        "Fields": {
+          "op_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "A random number starts with 4 for the operation."},
+          "subject_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "A random number starts with 1 for the patient."},
+          "hadm_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "A random number starts with 2 for hospital admission."},
+          "case_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "A linker to VitalDB Open Dataset"},
+          "opdate": {"is_pk": false, "is_fk": false, "relation": "", "description": "Operation date (Relative Time)"},
+          "age": {"is_pk": false, "is_fk": false, "relation": "", "description": "Age of the patient on the operation date"},
+          "sex": {"is_pk": false, "is_fk": false, "relation": "", "description": "Sex of the patient (M/F)"},
+          "weight": {"is_pk": false, "is_fk": false, "relation": "", "description": "Weight measured before operation"},
+          "height": {"is_pk": false, "is_fk": false, "relation": "", "description": "Height measured before operation"},
+          "race": {"is_pk": false, "is_fk": false, "relation": "", "description": "Race of the patient"},
+          "asa": {"is_pk": false, "is_fk": false, "relation": "", "description": "American Society of Anesthesiologists physical status classification (1/2/3/4/5)"},
+          "emop": {"is_pk": false, "is_fk": false, "relation": "", "description": "Emergency of the operation (Binary)"},
+          "department": {"is_pk": false, "is_fk": false, "relation": "", "description": "Surgical department for admission"},
+          "antype": {"is_pk": false, "is_fk": false, "relation": "", "description": "Anesthesia Type (General / Neuraxial / Regional / MAC)"},
+          "icd10_pcs": {"is_pk": false, "is_fk": false, "relation": "", "description": "ICD-10 Procedure Coding System code"},
+          "orin_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for entering the operating room (Relative Time)"},
+          "orout_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for leaving the operating room (Relative Time)"},
+          "opstart_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for starting the operation (Relative Time)"},
+          "opend_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for finishing the operation (Relative Time)"},
+          "admission_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for hospital admission (Relative Time)"},
+          "discharge_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for hospital discharge (Relative Time)"},
+          "anstart_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for starting anaesthesia (Relative Time)"},
+          "anend_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for finishing anaesthesia (Relative Time)"},
+          "cpbon_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for starting cardiopulmonary bypass (Relative Time)"},
+          "cpboff_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for finishing cardiopulmonary bypass (Relative Time)"},
+          "icuin_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for ICU admission after surgery (Relative Time)"},
+          "icuout_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for ICU discharge after surgery (Relative Time)"},
+          "inhosp_death_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for in-hospital death (Relative Time)"},
+          "allcause_death_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for all-cause death (Relative Time)"}
+        }
+      },
+      "diagnosis": {
+        "Description": "Patient diagnosis information with ICD-10 diagnosis codes recorded at specific times",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "The patient identifier defined in the operations table"},
+          "chart_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for the diagnosis recorded (Relative Time)"},
+          "icd10_cm": {"is_pk": false, "is_fk": false, "relation": "", "description": "ICD-10 Diagnosis Code"}
+        }
+      },
+      "vitals": {
+        "Description": "Vital signs measurements during operations with timestamped values",
+        "Fields": {
+          "op_id": {"is_pk": false, "is_fk": false, "relation": "inspire.operations.op_id", "description": "Operation identifier defined in the operations table"},
+          "subject_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "The patient identifier defined in the operations table"},
+          "chart_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for the measurement recorded (Relative Time)"},
+          "item_name": {"is_pk": false, "is_fk": false, "relation": "", "description": "Label for the measurement"},
+          "value": {"is_pk": false, "is_fk": false, "relation": "", "description": "Measured value"}
+        }
+      },
+      "ward_vitals": {
+        "Description": "Ward vital signs measurements with timestamped values outside of operating room",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "The patient identifier defined in the operations table"},
+          "chart_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for the measurement recorded (Relative Time)"},
+          "item_name": {"is_pk": false, "is_fk": false, "relation": "", "description": "Label for the measurement"},
+          "value": {"is_pk": false, "is_fk": false, "relation": "", "description": "Measured value"}
+        }
+      },
+      "labs": {
+        "Description": "Laboratory test results with timestamped values for patients",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "The patient identifier defined in the operations table"},
+          "chart_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for the measurement recorded (Relative Time)"},
+          "item_name": {"is_pk": false, "is_fk": false, "relation": "", "description": "Label for the measurement"},
+          "value": {"is_pk": false, "is_fk": false, "relation": "", "description": "Measured value"}
+        }
+      },
+      "medications": {
+        "Description": "Medication administration records with drug names, routes, and ATC codes",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "The patient identifier defined in the operations table"},
+          "chart_time": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time for the medication administration recorded (Relative Time)"},
+          "drug_name": {"is_pk": false, "is_fk": false, "relation": "", "description": "Name of the medication"},
+          "drug_name2": {"is_pk": false, "is_fk": false, "relation": "", "description": "Name of the medication2"},
+          "drug_name3": {"is_pk": false, "is_fk": false, "relation": "", "description": "Name of the medication3"},
+          "route": {"is_pk": false, "is_fk": false, "relation": "", "description": "Route for the medication (po/iv/ex)"},
+          "atc_code": {"is_pk": false, "is_fk": false, "relation": "", "description": "WHO ATC code"},
+          "atc_code2": {"is_pk": false, "is_fk": false, "relation": "", "description": "WHO ATC code2"},
+          "atc_code3": {"is_pk": false, "is_fk": false, "relation": "", "description": "WHO ATC code3"}
+        }
+      }
+    }
+  }
+}
