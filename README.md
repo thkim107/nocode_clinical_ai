@@ -8,4 +8,4 @@
 
 4. Manuscript Generation and Formatting Assistant
 
-Telemetry 및 논문 분석용 PostgreSQL 로그: [docs/telemetry.md](docs/telemetry.md)
+
