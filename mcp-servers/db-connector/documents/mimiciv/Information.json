@@ -1,0 +1,511 @@
+{
+  "mimiciv_hosp": {
+    "Description": "Hospital-level data including admissions, diagnoses, procedures, medications, and laboratory results",
+    "Tables": {
+      "admissions": {
+          "Description": "The admissions table gives information regarding a patient's admission to the hospital. Since each unique hospital visit for a patient is assigned a unique hadm_id, the admissions table can be considered as a definition table for hadm_id. Information available includes timing information for admission and discharge, demographic information, the source of the admission, and so on. Important considerations: The data is sourced from the admission, discharge and transfer database from the hospital (often referred to as 'ADT' data). Organ donor accounts are sometimes created for patients who died in the hospital. These are distinct hospital admissions with very short, sometimes negative lengths of stay. Furthermore, their deathtime is frequently the same as the earlier patient admission's deathtime",
+          "Fields": {
+              "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "Unique identifier for each patient. Can appear multiple times in this table as a single patient may have multiple hospital admissions. Links to the PATIENTS table."},
+              "hadm_id": {"is_pk": true, "is_fk": false, "relation": "", "description": "Unique identifier for each hospital admission. Ranges from 2000000 - 2999999. Each row contains a unique hadm_id representing a single patient's admission to the hospital."},
+              "admittime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Date and time the patient was admitted to the hospital."},
+              "dischtime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Date and time the patient was discharged from the hospital. For patients who died in-hospital, this is almost always the same as deathtime, though some discrepancies may exist due to typographical errors."},
+              "deathtime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Time of in-hospital death for the patient. Only present if the patient died in-hospital. Usually matches dischtime but may have discrepancies due to typographical errors."},
+              "admission_type": {"is_pk": false, "is_fk": false, "relation": "", "description": "Classification of the urgency of the admission. Possible values: 'AMBULATORY OBSERVATION', 'DIRECT EMER.', 'DIRECT OBSERVATION', 'ELECTIVE', 'EU OBSERVATION', 'EW EMER.', 'OBSERVATION ADMIT', 'SURGICAL SAME DAY ADMISSION', 'URGENT'."},
+              "admit_provider_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Anonymous identifier for the provider who admitted the patient. Follows pattern: letter 'P' + three numbers + two letters or two numbers (e.g., 'P003AB', 'P00102', 'P1248B'). Randomly generated with no inherent meaning other than unique identification."},
+              "admission_location": {"is_pk": false, "is_fk": false, "relation": "", "description": "Location of the patient prior to arriving at the hospital. Emergency room admissions usually show emergency room as admission location since it's technically a clinic. Associated with UB-04 billing codes."},
+              "discharge_location": {"is_pk": false, "is_fk": false, "relation": "", "description": "Disposition of the patient after discharge from the hospital. Associated with UB-04 billing codes. Examples include HOME, ACUTE HOSPITAL, SKILLED NURSING FACILITY, etc."},
+              "insurance": {"is_pk": false, "is_fk": false, "relation": "", "description": "Insurance information for the patient during this hospitalization. May change from stay to stay for the same patient."},
+              "language": {"is_pk": false, "is_fk": false, "relation": "", "description": "Primary language of the patient during this hospitalization. May change from stay to stay for the same patient."},
+              "marital_status": {"is_pk": false, "is_fk": false, "relation": "", "description": "Marital status of the patient during this hospitalization. May change from stay to stay for the same patient."},
+              "race": {"is_pk": false, "is_fk": false, "relation": "", "description": "Race/ethnicity information of the patient during this hospitalization. May change from stay to stay for the same patient. (Note: appears as 'race' in schema but referred to as 'ethnicity' in documentation)"},
+              "edregtime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Date and time at which the patient was registered in the emergency department."},
+              "edouttime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Date and time at which the patient was discharged from the emergency department."},
+              "hospital_expire_flag": {"is_pk": false, "is_fk": false, "relation": "", "description": "Binary flag indicating whether the patient died within the given hospitalization. 1 = death in hospital, 0 = survival to hospital discharge."}
+          }
+      },
+      "d_hcpcs": {
+        "Description": "The d_hcpcs table is used to acquire human readable definitions for the codes used in the hcpcsevents table. The concepts primarily correspond to hospital billing, and are mostly CPT codes. Unfortunately due to licensing restrictions not all code definitions are available.",
+        "Fields": {
+          "code": {"is_pk": true, "is_fk": false, "relation": "", "description": "A five character code which uniquely represents the event."},
+          "category": {"is_pk": false, "is_fk": false, "relation": "", "description": "Broad classification of the code."},
+          "long_description": {"is_pk": false, "is_fk": false, "relation": "", "description": "Long Textual descriptions of the code listed for the given row."},
+          "short_description": {"is_pk": false, "is_fk": false, "relation": "", "description": "Short Textual descriptions of the code listed for the given row."}
+        }
+      },
+      "diagnoses_icd": {
+        "Description": "During routine hospital care, patients are billed by the hospital for diagnoses associated with their hospital stay. This table contains a record of all diagnoses a patient was billed for during their hospital stay using the ICD-9 and ICD-10 ontologies. Diagnoses are billed on hospital discharge, and are determined by trained persons who read signed clinical notes.",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "Unique identifier for an individual patient. All rows with the same subject_id pertain to the same individual."},
+          "hadm_id": {"is_pk": true, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id", "description": "Integer identifier unique for each patient hospitalization."},
+          "seq_num": {"is_pk": true, "is_fk": false, "relation": "", "description": "Priority ranking assigned to diagnoses indicating relative importance. Lower numbers indicate higher priority, though ranking rules vary (e.g., sepsis must be 2nd priority with infectious agent as 1st)."},
+          "icd_code": {"is_pk": true, "is_fk": false, "relation": "", "description": "International Classification of Diseases (ICD) diagnostic code. Decimal points may be present but are not required for interpretation (e.g., '0010' equals '001.0')."},
+          "icd_version": {"is_pk": true, "is_fk": false, "relation": "", "description": "Version of the ICD coding system used. Either 9 (ICD-9) or 10 (ICD-10), with ICD-10 being more detailed than ICD-9."}
+      }
+      },
+      "d_icd_diagnoses": {
+        "Description": "This table defines International Classification of Diseases (ICD) Version 9 and 10 codes for diagnoses. These codes are assigned at the end of the patient’s stay and are used by the hospital to bill for care provided.",
+        "Fields": {
+          "icd_code": {"is_pk": true, "is_fk": false, "relation": "", "description": "International Classification of Diseases (ICD) diagnostic code. Decimal points may be present but are not required for interpretation (e.g., '0010' equals '001.0')."},
+          "icd_version": {"is_pk": true, "is_fk": false, "relation": "", "description": "Version of the ICD coding system used. Either 9 (ICD-9) or 10 (ICD-10), with ICD-10 being more detailed than ICD-9."},
+          "long_title": {"is_pk": false, "is_fk": false, "relation": "", "description": "The long_title provides the meaning of the ICD code. For example, the ICD-9 code 0010 has long_title “Cholera due to vibrio cholerae”."}
+        }
+      },
+      "d_icd_procedures": {
+        "Description": "This table defines International Classification of Diseases (ICD) codes for procedures. These codes are assigned at the end of the patient’s stay and are used by the hospital to bill for care provided. They can further be used to identify if certain procedures have been performed (e.g. surgery).",
+        "Fields": {
+          "icd_code": {"is_pk": true, "is_fk": false, "relation": "", "description": "International Classification of Diseases (ICD) diagnostic code. Decimal points may be present but are not required for interpretation (e.g., '0010' equals '001.0')."},
+          "icd_version": {"is_pk": true, "is_fk": false, "relation": "", "description": "Version of the ICD coding system used. Either 9 (ICD-9) or 10 (ICD-10), with ICD-10 being more detailed than ICD-9."},
+          "long_title": {"is_pk": false, "is_fk": false, "relation": "", "description": "The title fields provide a brief definition for the given procedure code in ``."}
+        }
+      },
+      "d_labitems": {
+        "Description": "d_labitems contains definitions for all itemid associated with lab measurements in the MIMIC database. All data in labevents link to the d_labitems table. Each unique (fluid, category, label) tuple in the hospital database was assigned an itemid in this table, and the use of this itemid facilitates efficient storage and querying of the data. Laboratory data contains information collected and recorded in the hospital laboratory database. This includes measurements made in wards within the hospital and clinics outside the hospital. Most concepts in this table have been mapped to LOINC codes, an openly available ontology which facilitates interoperability",
+        "Fields": {
+          "itemid": {"is_pk": true, "is_fk": false, "relation": "","description": "A unique identifier for a laboratory concept. itemid is unique to each row, and can be used to identify data in labevents associated with a specific concept."},
+          "label": {"is_pk": false, "is_fk": false, "relation": "","description": "The label column describes the concept which is represented by the itemid."},
+          "fluid": {"is_pk": false, "is_fk": false, "relation": "","description": "fluid describes the substance on which the measurement was made. For example, chemistry measurements are frequently performed on blood, which is listed in this column as ‘BLOOD’. Many of these measurements are also acquirable on other fluids, such as urine, and this column differentiates these distinct concepts."},
+          "category": {"is_pk": false, "is_fk": false, "relation": "","description": "category provides higher level information as to the type of measurement. For example, a category of ‘ABG’ indicates that the measurement is an arterial blood gas."}
+        }
+      },
+      "drgcodes": {
+        "Description": "Diagnosis related groups (DRGs) are used by the hospital to obtain reimbursement for a patient’s hospital stay. The codes correspond to the primary reason for a patient’s stay at the hospital.",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id","description":"subject_id is a unique identifier which specifies an individual patient. Any rows associated with a single subject_id pertain to the same individual."},
+          "hadm_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id","description":"hadm_id is an integer identifier which is unique for each patient hospitalization."},
+          "drg_type": {"is_pk": false, "is_fk": false, "relation": "","description":"The specific DRG ontology used for the code."},
+          "drg_code": {"is_pk": false, "is_fk": false, "relation": "","description":"The DRG code."},
+          "description": {"is_pk": false, "is_fk": false, "relation": "","description":"A description for the given DRG code."},
+          "drg_severity": {"is_pk": false, "is_fk": false, "relation": "","description":"Some DRG ontologies further qualify the patient severity of illness and likelihood of mortality, which are recorded here."},
+          "drg_mortality": {"is_pk": false, "is_fk": false, "relation": "","description":"Some DRG ontologies further qualify the patient severity of illness and likelihood of mortality, which are recorded here."}
+        }
+      },
+      "emar_detail": {
+        "Description": "The emar_detail table contains information for each medicine administration made in the EMAR table. Information includes the associated pharmacy order, the dose due, the dose given, and many other parameters associated with the medical administration.",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "Unique identifier which specifies an individual patient. Any rows associated with a single subject_id pertain to the same individual."},
+          "emar_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.emar.emar_id", "description": "Unique identifier for each order made in eMAR. Composed of subject_id and emar_seq in the pattern 'subject_id-emar_seq'."},
+          "emar_seq": {"is_pk": false, "is_fk": false, "relation": "", "description": "Consecutive integer which numbers eMAR orders chronologically for each patient."},
+          "parent_field_ordinal": {"is_pk": false, "is_fk": false, "relation": "", "description": "Delineates multiple administrations for the same eMAR event. NULL for main order row, '1.1', '1.2', etc. for multiple formulary doses."},
+          "administration_type": {"is_pk": false, "is_fk": false, "relation": "", "description": "Type of administration including 'IV Bolus', 'IV Infusion', 'Medication Infusion', 'Transdermal Patch', etc."},
+          "pharmacy_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Identifier which allows linking the eMAR order to pharmacy information provided in the pharmacy table."},
+          "barcode_type": {"is_pk": false, "is_fk": false, "relation": "", "description": "Type of barcode used for medication administration verification."},
+          "reason_for_no_barcode": {"is_pk": false, "is_fk": false, "relation": "", "description": "Reason provided when medication is administered without barcode scanning."},
+          "complete_dose_not_given": {"is_pk": false, "is_fk": false, "relation": "", "description": "Indicates whether the complete prescribed dose was not administered."},
+          "dose_due": {"is_pk": false, "is_fk": false, "relation": "", "description": "Amount of medication dose that was prescribed/due to be administered."},
+          "dose_due_unit": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unit of measurement for the dose_due field."},
+          "dose_given": {"is_pk": false, "is_fk": false, "relation": "", "description": "Amount of medication dose that was actually administered to the patient."},
+          "dose_given_unit": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unit of measurement for the dose_given field."},
+          "will_remainder_of_dose_be_given": {"is_pk": false, "is_fk": false, "relation": "", "description": "Indicates whether the remaining portion of a partially administered dose will be given later."},
+          "product_amount_given": {"is_pk": false, "is_fk": false, "relation": "", "description": "Amount of the pharmaceutical product that was administered."},
+          "product_unit": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unit of measurement for the product_amount_given field."},
+          "product_code": {"is_pk": false, "is_fk": false, "relation": "", "description": "Code identifier for the pharmaceutical product administered."},
+          "product_description": {"is_pk": false, "is_fk": false, "relation": "", "description": "Descriptive name or details of the pharmaceutical product administered."},
+          "product_description_other": {"is_pk": false, "is_fk": false, "relation": "", "description": "Additional or alternative description of the pharmaceutical product."},
+          "prior_infusion_rate": {"is_pk": false, "is_fk": false, "relation": "", "description": "Previous infusion rate before any adjustments were made."},
+          "infusion_rate": {"is_pk": false, "is_fk": false, "relation": "", "description": "Current rate at which medication is being infused."},
+          "infusion_rate_adjustment": {"is_pk": false, "is_fk": false, "relation": "", "description": "Type of adjustment made to the infusion rate (increase, decrease, etc.)."},
+          "infusion_rate_adjustment_amount": {"is_pk": false, "is_fk": false, "relation": "", "description": "Amount by which the infusion rate was adjusted."},
+          "infusion_rate_unit": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unit of measurement for infusion rate fields."},
+          "route": {"is_pk": false, "is_fk": false, "relation": "", "description": "Route of medication administration (oral, IV, IM, etc.)."},
+          "infusion_complete": {"is_pk": false, "is_fk": false, "relation": "", "description": "Indicates whether the infusion has been completed."},
+          "completion_interval": {"is_pk": false, "is_fk": false, "relation": "", "description": "Time interval over which the medication administration was completed."},
+          "new_iv_bag_hung": {"is_pk": false, "is_fk": false, "relation": "", "description": "Indicates whether a new IV bag was hung during this administration."},
+          "continued_infusion_in_other_location": {"is_pk": false, "is_fk": false, "relation": "", "description": "Indicates whether the infusion was continued in a different location."},
+          "restart_interval": {"is_pk": false, "is_fk": false, "relation": "", "description": "Time interval after which an infusion was restarted."},
+          "side": {"is_pk": false, "is_fk": false, "relation": "", "description": "Body side where medication was administered (left, right, etc.)."},
+          "site": {"is_pk": false, "is_fk": false, "relation": "", "description": "Specific body site or location where medication was administered."},
+          "non_formulary_visual_verification": {"is_pk": false, "is_fk": false, "relation": "", "description": "Indicates whether visual verification was performed for non-formulary medications."}
+      }
+      },
+      "emar": {
+        "Description": "The EMAR table is used to record administrations of a given medicine to an individual patient. Records in this table are populated by bedside nursing staff scanning barcodes associated with the medicine and the patient.",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "A unique identifier which specifies an individual patient. Any rows associated with a single subject_id pertain to the same individual."},
+          "hadm_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id", "description": "An integer identifier which is unique for each patient hospitalization."},
+          "emar_id": {"is_pk": true, "is_fk": false, "relation": "", "description": "A unique identifier for each order made in eMAR. Composed of subject_id and emar_seq in the pattern 'subject_id-emar_seq'."},
+          "emar_seq": {"is_pk": false, "is_fk": false, "relation": "", "description": "A consecutive integer which numbers eMAR orders chronologically."},
+          "poe_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "An identifier which links administrations in emar to orders in poe and prescriptions."},
+          "pharmacy_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "An identifier which links administrations in emar to pharmacy information in the pharmacy table."},
+          "enter_provider_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "An anonymous identifier for the provider who entered the information into the eMAR system. Follows pattern: letter 'P' followed by three numbers and two letters/numbers (e.g., 'P003AB', 'P00102')."},
+          "charttime": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time at which the medication was administered."},
+          "medication": {"is_pk": false, "is_fk": false, "relation": "", "description": "The name of the medication which was administered."},
+          "event_txt": {"is_pk": false, "is_fk": false, "relation": "", "description": "Information about the administration. Most frequently 'Administered', but other possible values include 'Applied', 'Confirmed', 'Delayed', 'Not Given', etc."},
+          "scheduletime": {"is_pk": false, "is_fk": false, "relation": "", "description": "If present, the time at which the administration was scheduled."},
+          "storetime": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time at which the administration was documented in the eMAR table."}
+      }
+      },
+      "hcpcsevents": {
+        "Description": "HCPCS procedure events during hospital admissions",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id"},
+          "hadm_id": {"is_pk": true, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id"},
+          "chartdate": {"is_pk": false, "is_fk": false, "relation": ""},
+          "hcpcs_cd": {"is_pk": true, "is_fk": true, "relation": "mimiciv_hosp.d_hcpcs.code"},
+          "seq_num": {"is_pk": true, "is_fk": false, "relation": ""},
+          "short_description": {"is_pk": false, "is_fk": false, "relation": ""}
+        }
+      },
+      "labevents": {
+        "Description": "The labevents table stores the results of all laboratory measurements made for a single patient. These include hematology measurements, blood gases, chemistry panels, and less common tests such as genetic assays. Important considerations: hadm_id is assigned to labs close to the hospital stay using the transfers table. However this does not always perfectly capture labs proximal to the hospital stay. To be specific, as of v2.1, it is possible to assign 59,327,830 observations with an hadm_id using a join to admissions withsubject_id, admittime, and dischtime. However, only 58,131,956 (98%) of these observations have an hadm_id actually stored in the labevents table. Users wishing to ensure capture of labs proximal to hospital stays should be aware of this, and use joins with time as necessary. The following conditions must occur in order for this data to not have an hadm_id in the table: the lab observation must fall outside of a row in transfers the lab observation must not have an associated ED stay identifier",
+        "Fields": {
+          "labevent_id": {"is_pk": true, "is_fk": false, "relation": "", "description": "An integer which is unique for every row in the table."},
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "A unique identifier which specifies an individual patient. Any rows associated with a single subject_id pertain to the same individual."},
+          "hadm_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "An integer identifier which is unique for each patient hospitalization."},
+          "specimen_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Uniquely denoted the specimen from which the lab measurement was made. Most lab measurements are made on patient derived samples (specimens) such as blood, urine, and so on. Often multiple measurements are made on the same sample."},
+          "itemid": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.d_labitems.itemid", "description": "An identifier which uniquely denotes laboratory concepts."},
+          "order_provider_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Provides an anonymous identifier for the provider who ordered the laboratory measurement. Provider identifiers follow a consistent pattern: the letter P, followed by either three numbers, followed by two letters or two numbers."},
+          "charttime": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time at which the laboratory measurement was charted. This is usually the time at which the specimen was acquired, and is usually significantly earlier than the time at which the measurement is available."},
+          "storetime": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time at which the measurement was made available in the laboratory system. This is when the information would have been available to care providers."},
+          "value": {"is_pk": false, "is_fk": false, "relation": "", "description": "The result of the laboratory measurement."},
+          "valuenum": {"is_pk": false, "is_fk": false, "relation": "", "description": "If the laboratory measurement result is numeric, the value cast as a numeric data type."},
+          "valueuom": {"is_pk": false, "is_fk": false, "relation": "", "description": "The unit of measurement for the laboratory concept."},
+          "ref_range_lower": {"is_pk": false, "is_fk": false, "relation": "", "description": "Lower reference range indicating the normal range for the laboratory measurements. Values outside the reference ranges are considered abnormal."},
+          "ref_range_upper": {"is_pk": false, "is_fk": false, "relation": "", "description": "Upper reference range indicating the normal range for the laboratory measurements. Values outside the reference ranges are considered abnormal."},
+          "flag": {"is_pk": false, "is_fk": false, "relation": "", "description": "A brief string mainly used to indicate if the laboratory measurement is abnormal."},
+          "priority": {"is_pk": false, "is_fk": false, "relation": "", "description": "The priority of the laboratory measurement: either routine or stat (urgent)."},
+          "comments": {"is_pk": false, "is_fk": false, "relation": "", "description": "Deidentified free-text comments associated with the laboratory measurement. Usually these provide information about the sample, whether any notifications were made to care providers regarding the results, considerations for interpretation, or in some cases the comments contain the result of the laboratory itself."}
+          }
+      },
+      "microbiologyevents": {
+        "Description": "Microbiology tests are a common procedure to check for infectious growth and to assess which antibiotic treatments are most effective. The table is best explained with a demonstrative example. If a blood culture is requested for a patient, then a blood sample will be taken and sent to the microbiology lab. The time at which this blood sample is taken is the charttime. The spec_type_desc will indicate that this is a blood sample. Bacteria will be cultured on the blood sample, and the remaining columns depend on the outcome of this growth: If no growth is found, the remaining columns will be NULL. If bacteria is found, then each organism of bacteria will be present in org_name, resulting in multiple rows for the single specimen (i.e. multiple rows for the given spec_type_desc). If antibiotics are tested on a given bacterial organism, then each antibiotic tested will be present in the ab_name column (i.e. multiple rows for the given org_name associated with the given spec_type_desc). Antibiotic parameters and sensitivities are present in the remaining columns (dilution_text, dilution_comparison, dilution_value, interpretation). Important considerations: Typically, negative values are indicated by a NULL value. However, itemid 90856 has a value of “NEGATIVE”, and should be included in queries which seek to segregate microbiology data based on positive/negative findings. hadm_id is assigned to observations using the administrative transfer table. However this does not always perfectly capture labs around the hospital stay. To be specific, as of v2.1, it is possible to assign 1,449,547 observations with an hadm_id using a join to admissions with subject_id, admittime, and dischtime. However, only 1,396,224 (96%) of these observations have an hadm_id actually stored in the microbiologyevents table. Users wishing to ensure capture of labs proximal to hospital stays should be aware of this, and use joins with time as necessary.",
+        "Fields": {
+          "microevent_id": {"is_pk": true, "is_fk": false, "relation": "", "description": "A unique integer denoting the row"},
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "A unique identifier which specifies an individual patient. Any rows associated with a single subject_id pertain to the same individual"},
+          "hadm_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id", "description": "An integer identifier which is unique for each patient hospitalization"},
+          "micro_specimen_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Uniquely denoted the specimen from which the microbiology measurement was made. Groups measurements made on the same sample"},
+          "order_provider_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Provides an anonymous identifier for the provider who ordered the microbiology test. Pattern: letter P followed by three numbers and two letters/numbers"},
+          "chartdate": {"is_pk": false, "is_fk": false, "relation": "", "description": "The date at which an observation was charted, used when charttime is not available"},
+          "charttime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Records the time at which an observation was charted, usually the closest proxy to the time the data was actually measured"},
+          "spec_itemid": {"is_pk": false, "is_fk": false, "relation": "", "description": "Identifier for the specimen which is tested for bacterial growth"},
+          "spec_type_desc": {"is_pk": false, "is_fk": false, "relation": "", "description": "Description of the specimen which is tested for bacterial growth (e.g. blood, urine, sputum)"},
+          "test_seq": {"is_pk": false, "is_fk": false, "relation": "", "description": "Delineates multiple samples if drawn. For example, aerobic and anaerobic culture bottles will have distinct test_seq values"},
+          "storedate": {"is_pk": false, "is_fk": false, "relation": "", "description": "The date when the microbiology result was available (last known update)"},
+          "storetime": {"is_pk": false, "is_fk": false, "relation": "", "description": "The date and time when the microbiology result was available (last known update)"},
+          "test_itemid": {"is_pk": false, "is_fk": false, "relation": "", "description": "Identifier for the test performed on the given specimen"},
+          "test_name": {"is_pk": false, "is_fk": false, "relation": "", "description": "The test performed on the given specimen"},
+          "org_itemid": {"is_pk": false, "is_fk": false, "relation": "", "description": "Identifier for the organism which grew when tested. If NULL, no organism grew"},
+          "org_name": {"is_pk": false, "is_fk": false, "relation": "", "description": "The organism, if any, which grew when tested. If NULL, no organism grew (negative culture)"},
+          "isolate_num": {"is_pk": false, "is_fk": false, "relation": "", "description": "For testing antibiotics, the isolated colony (integer; starts at 1)"},
+          "quantity": {"is_pk": false, "is_fk": false, "relation": "", "description": "Quantity measurement (field not described in provided documentation)"},
+          "ab_itemid": {"is_pk": false, "is_fk": false, "relation": "", "description": "Identifier for the antibiotic tested against the given organism for sensitivity"},
+          "ab_name": {"is_pk": false, "is_fk": false, "relation": "", "description": "If an antibiotic was tested against the given organism for sensitivity, the antibiotic is listed here"},
+          "dilution_text": {"is_pk": false, "is_fk": false, "relation": "", "description": "Dilution values when testing antibiotic sensitivity (text format)"},
+          "dilution_comparison": {"is_pk": false, "is_fk": false, "relation": "", "description": "Dilution comparison values when testing antibiotic sensitivity"},
+          "dilution_value": {"is_pk": false, "is_fk": false, "relation": "", "description": "Dilution numerical values when testing antibiotic sensitivity"},
+          "interpretation": {"is_pk": false, "is_fk": false, "relation": "", "description": "Interpretation of the antibiotic sensitivity test results. S=sensitive, R=resistant, I=intermediate, P=pending"},
+          "comments": {"is_pk": false, "is_fk": false, "relation": "", "description": "Deidentified free-text comments associated with the microbiology measurement. ___ indicates fully deidentified content, NULL indicates no comment"}
+          }
+      },
+      "omr": {
+        "Description": "The Online Medical Record (OMR) table stores miscellaneous information documented in the electronic health record. It is a useful source of outpatient measurements such as blood pressure, weight, height, and body mass index.",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "A unique identifier which specifies an individual patient. Any rows associated with a single subject_id pertain to the same individual."},
+          "chartdate": {"is_pk": false, "is_fk": false, "relation": "", "description": "The date on which the observation was recorded."},
+          "seq_num": {"is_pk": false, "is_fk": false, "relation": "", "description": "An monotonically increasing integer which uniquely distinguishes results of the same type recorded on the same day. For example, if two blood pressure measurements occur on the same day, seq_num orders them chronologically."},
+          "result_name": {"is_pk": false, "is_fk": false, "relation": "", "description": "Each row provides detail regarding a single observation in the EHR. result_name provides a human interpretable description of the observation."},
+          "result_value": {"is_pk": false, "is_fk": false, "relation": "", "description": "The value associated with the given OMR observation. For example, for the result_name of 'Blood Pressure', the result_value column contains the recorded blood pressure (120/80, 130/70, and so on)."}
+      }
+      },
+      "patients": {
+        "Description": "Information that is consistent for the lifetime of a patient is stored in this table.",
+        "Fields": {
+          "subject_id": {"is_pk": true, "is_fk": false, "relation": "", "description": "A unique identifier which specifies an individual patient. Any rows associated with a single subject_id pertain to the same individual. As subject_id is the primary key for the table, it is unique for each row."},
+          "gender": {"is_pk": false, "is_fk": false, "relation": "", "description": "The genotypical sex of the patient."},
+          "anchor_age": {"is_pk": false, "is_fk": false, "relation": "", "description": "The patient's age in the anchor_year. If a patient's anchor_age is over 89 in the anchor_year then their anchor_age is set to 91, regardless of how old they actually were."},
+          "anchor_year": {"is_pk": false, "is_fk": false, "relation": "", "description": "A shifted year for the patient."},
+          "anchor_year_group": {"is_pk": false, "is_fk": false, "relation": "", "description": "A range of years - the patient's anchor_year occurred during this range."},
+          "dod": {"is_pk": false, "is_fk": false, "relation": "", "description": "The de-identified date of death for the patient. Date of death is extracted from two sources: the hospital information system and the Massachusetts State Registry of Vital Records and Statistics. Individual patient records from MIMIC were matched to the vital records using a custom algorithm based on identifiers including name, social security number, and date of birth."}
+      }
+      },
+      "pharmacy": {
+        "Description": "The pharmacy table provides detailed information regarding filled medications which were prescribed to the patient. Pharmacy information includes the dose of the drug, the number of formulary doses, the frequency of dosing, the medication route, and the duration of the prescription.",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "A unique identifier which specifies an individual patient. Any rows associated with a single subject_id pertain to the same individual."},
+          "hadm_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id", "description": "An integer identifier which is unique for each patient hospitalization."},
+          "pharmacy_id": {"is_pk": true, "is_fk": false, "relation": "", "description": "A unique identifier for the given pharmacy entry. Each row of the pharmacy table has a unique pharmacy_id. This identifier can be used to link the pharmacy information to the provider order (in poe or prescriptions) or to the administration of the medication (in emar)."},
+          "poe_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "A foreign key which links to the provider order entry order in the prescriptions table associated with this pharmacy record."},
+          "starttime": {"is_pk": false, "is_fk": false, "relation": "", "description": "The start time for the given prescribed medication."},
+          "stoptime": {"is_pk": false, "is_fk": false, "relation": "", "description": "The stop time for the given prescribed medication."},
+          "medication": {"is_pk": false, "is_fk": false, "relation": "", "description": "The name of the medication provided."},
+          "proc_type": {"is_pk": false, "is_fk": false, "relation": "", "description": "The type of order: IV Piggyback, Non-formulary, Unit Dose, and so on."},
+          "status": {"is_pk": false, "is_fk": false, "relation": "", "description": "Whether the prescription is active, inactive, or discontinued."},
+          "entertime": {"is_pk": false, "is_fk": false, "relation": "", "description": "The date and time at which the prescription was entered into the pharmacy system."},
+          "verifiedtime": {"is_pk": false, "is_fk": false, "relation": "", "description": "The date and time at which the prescription was verified by a physician."},
+          "route": {"is_pk": false, "is_fk": false, "relation": "", "description": "The intended route of administration for the prescription."},
+          "frequency": {"is_pk": false, "is_fk": false, "relation": "", "description": "The frequency at which the medication should be administered to the patient. Many commonly used short hands are used in the frequency column. Q# indicates every # hours; e.g. Q6 or Q6H is every 6 hours."},
+          "disp_sched": {"is_pk": false, "is_fk": false, "relation": "", "description": "The hours of the day at which the medication should be administered, e.g. 08, 20 would indicate the medication should be administered at 8:00 AM and 8:00 PM, respectively."},
+          "infusion_type": {"is_pk": false, "is_fk": false, "relation": "", "description": "A coded letter describing the type of infusion: B, C, N, N1, O, or R."},
+          "sliding_scale": {"is_pk": false, "is_fk": false, "relation": "", "description": "Indicates whether the medication should be given on a sliding scale: either Y or N."},
+          "lockout_interval": {"is_pk": false, "is_fk": false, "relation": "", "description": "The time the patient must wait until providing themselves with another dose; often used with patient controlled analgesia."},
+          "basal_rate": {"is_pk": false, "is_fk": false, "relation": "", "description": "The rate at which the medication is given over 24 hours."},
+          "one_hr_max": {"is_pk": false, "is_fk": false, "relation": "", "description": "The maximum dose that may be given in a single hour."},
+          "doses_per_24_hrs": {"is_pk": false, "is_fk": false, "relation": "", "description": "The number of expected doses per 24 hours. Note that this column can be misleading for continuously infused medications as they are usually only dosed once per day, despite continuous administration."},
+          "duration": {"is_pk": false, "is_fk": false, "relation": "", "description": "The numeric duration of the given dose."},
+          "duration_interval": {"is_pk": false, "is_fk": false, "relation": "", "description": "The unit of measurement for the given duration. For example, often duration is 1 and duration_interval is Doses. Alternatively, duration could be 8 and the duration_interval could be Weeks."},
+          "expiration_value": {"is_pk": false, "is_fk": false, "relation": "", "description": "If the drug has a relevant expiry date, this provides a numeric length of time until the drug expires."},
+          "expiration_unit": {"is_pk": false, "is_fk": false, "relation": "", "description": "The unit of measurement for expiration_value, e.g. days, hours, and so on."},
+          "expirationdate": {"is_pk": false, "is_fk": false, "relation": "", "description": "The deidentified date of expiry for the drug."},
+          "dispensation": {"is_pk": false, "is_fk": false, "relation": "", "description": "The source of dispensation for the medication."},
+          "fill_quantity": {"is_pk": false, "is_fk": false, "relation": "", "description": "What proportion of the formulary to fill."}
+      }
+      },
+      "poe_detail": {
+        "Description": "The poe_detail table provides further information on POE orders. The table uses an Entity-Attribute-Value (EAV) model: the entity is poe_id, the attribute is field_name, and the value is field_value. EAV tables allow for flexible description of entities when the attributes are heterogenous.",
+        "Fields": {
+          "poe_id": {"is_pk": true, "is_fk": true, "relation": "mimiciv_hosp.poe.poe_id", "description": "A unique identifier for the given order, composed of subject_id and a monotonically increasing integer poe_seq in the format: subject_id-poe_seq"},
+          "poe_seq": {"is_pk": false, "is_fk": false, "relation": "", "description": "A monotonically increasing integer which chronologically sorts the POE orders, allowing POE orders to be ordered sequentially"},
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "A unique identifier which specifies an individual patient. Any rows associated with a single subject_id pertain to the same individual"},
+          "field_name": {"is_pk": true, "is_fk": false, "relation": "", "description": "The name given to a particular aspect of a POE order. Each row provides detail regarding a specific aspect such as Admit to, Indication, Code status, Transfer to, etc."},
+          "field_value": {"is_pk": false, "is_fk": false, "relation": "", "description": "The value associated with the given POE order and field_name. For example, for field_name 'Admit to', this contains the type of unit the patient was admitted to"}
+      }
+      },
+      "poe": {
+        "Description": "Provider order entry (POE) is the general interface through which care providers at the hospital enter orders. Most treatments and procedures must be ordered via POE.",
+        "Fields": {
+          "poe_id": {"is_pk": true, "is_fk": false, "relation": "", "description": "A unique identifier for the given order. Composed of subject_id and a monotonically increasing integer poe_seq in the format: subject_id-poe_seq."},
+          "poe_seq": {"is_pk": false, "is_fk": false, "relation": "", "description": "A monotonically increasing integer which chronologically sorts the POE orders. POE orders can be ordered sequentially by poe_seq."},
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "A unique identifier which specifies an individual patient. Any rows associated with a single subject_id pertain to the same individual."},
+          "hadm_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id", "description": "An integer identifier which is unique for each patient hospitalization."},
+          "ordertime": {"is_pk": false, "is_fk": false, "relation": "", "description": "The date and time at which the provider order was made."},
+          "order_type": {"is_pk": false, "is_fk": false, "relation": "", "description": "The type of provider order. One of: ADT orders, Blood Bank, Cardiology, Consults, Critical Care, General Care, Hemodialysis, IV therapy, Lab, Medications, Neurology, Nutrition, OB, Radiology, Respiratory, TPN."},
+          "order_subtype": {"is_pk": false, "is_fk": false, "relation": "", "description": "Further detail on the type of order made by the provider. The order_subtype is best interpreted alongside the order_type, e.g. order_type: 'Cardiology' with order_subtype: 'Holter Monitor'."},
+          "transaction_type": {"is_pk": false, "is_fk": false, "relation": "", "description": "The action which the provider performed when performing this order. One of: Change, Co, D/C, H, New, T."},
+          "discontinue_of_poe_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "If this order discontinues a previous order, then discontinue_of_poe_id will link to the previous order which was discontinued."},
+          "discontinued_by_poe_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "If this order was later discontinued by a distinct order, then discontinued_by_poe_id will link to that future order."},
+          "order_provider_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Provides an anonymous identifier for the provider who made the order. Provider identifiers follow a consistent pattern: the letter 'P', followed by either three numbers, followed by two letters or two numbers. For example, 'P003AB', 'P00102', 'P1248B', etc. Provider identifiers are randomly generated and do not have any inherent meaning aside from uniquely identifying the same provider across the database."},
+          "order_status": {"is_pk": false, "is_fk": false, "relation": "", "description": "Whether the order is still active ('Active') or whether it has been inactivated ('Inactive')."}
+          }
+      },
+      "prescriptions": {
+        "Description": "The prescriptions table provides information about prescribed medications. Information includes the name of the drug, coded identifiers including the Generic Sequence Number (GSN) and National Drug Code (NDC), the product strength, the formulary dose, and the route of administration.",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "A unique identifier which specifies an individual patient. Any rows associated with a single subject_id pertain to the same individual."},
+          "hadm_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id", "description": "An integer identifier which is unique for each patient hospitalization."},
+          "pharmacy_id": {"is_pk": true, "is_fk": false, "relation": "", "description": "An identifier which links administrations in emar to pharmacy information in the pharmacy table."},
+          "poe_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Column that allows linking prescriptions to associated orders in the poe table."},
+          "poe_seq": {"is_pk": false, "is_fk": false, "relation": "", "description": "Column that allows linking prescriptions to associated orders in the poe table."},
+          "order_provider_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Provides an anonymous identifier for the provider who initiated the order. Provider identifiers follow a consistent pattern: the letter 'P', followed by either three numbers, followed by two letters or two numbers (e.g., 'P003AB', 'P00102', 'P1248B'). Provider identifiers are randomly generated and do not have any inherent meaning aside from uniquely identifying the same provider across the database."},
+          "starttime": {"is_pk": false, "is_fk": false, "relation": "", "description": "The prescribed start time for the medication."},
+          "stoptime": {"is_pk": false, "is_fk": false, "relation": "", "description": "The prescribed stop time for the medication."},
+          "drug_type": {"is_pk": true, "is_fk": false, "relation": "", "description": "The component of the prescription which the drug occupies. Can be one of 'MAIN', 'BASE', or 'ADDITIVE'."},
+          "drug": {"is_pk": true, "is_fk": false, "relation": "", "description": "A free-text description of the medication administered."},
+          "formulary_drug_cd": {"is_pk": false, "is_fk": false, "relation": "", "description": "A hospital specific ontology used to order drugs from the formulary."},
+          "gsn": {"is_pk": false, "is_fk": false, "relation": "", "description": "The Generic Sequence Number (GSN), a coded identifier used for medications."},
+          "ndc": {"is_pk": false, "is_fk": false, "relation": "", "description": "The National Drug Code (NDC), a coded identifier which uniquely identifiers medications."},
+          "prod_strength": {"is_pk": false, "is_fk": false, "relation": "", "description": "A free-text description of the composition of the prescribed medication (e.g. '12 mg / 0.8 mL Oral Syringe', '12.5mg Tablet', etc)."},
+          "form_rx": {"is_pk": false, "is_fk": false, "relation": "", "description": "The container in which the formulary dose is delivered (e.g. 'TABLET', 'VIAL', etc)."},
+          "dose_val_rx": {"is_pk": false, "is_fk": false, "relation": "", "description": "The prescribed dose for the patient intended to be administered over the given time period."},
+          "dose_unit_rx": {"is_pk": false, "is_fk": false, "relation": "", "description": "The unit of measurement for the dose."},
+          "form_val_disp": {"is_pk": false, "is_fk": false, "relation": "", "description": "The amount of the medication which is contained in a single formulary dose."},
+          "form_unit_disp": {"is_pk": false, "is_fk": false, "relation": "", "description": "The unit of measurement used for the formulary dosage."},
+          "doses_per_24_hrs": {"is_pk": false, "is_fk": false, "relation": "", "description": "The number of doses per 24 hours for which the medication is to be given. A daily dose would result in doses_per_24_hrs: 1, bidaily (BID) would be 2, and so on."},
+          "route": {"is_pk": false, "is_fk": false, "relation": "", "description": "The route of administration for the medication."}
+          }
+      },
+      "procedures_icd": {
+        "Description": "During routine hospital care, patients are billed by the hospital for procedures they undergo. This table contains a record of all procedures a patient was billed for during their hospital stay using the ICD-9 and ICD-10 ontologies.",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "A unique identifier which specifies an individual patient. Any rows associated with a single subject_id pertain to the same individual."},
+          "hadm_id": {"is_pk": true, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id", "description": "An integer identifier which is unique for each patient hospitalization."},
+          "seq_num": {"is_pk": true, "is_fk": false, "relation": "", "description": "An assigned priority for procedures which occurred within the hospital stay."},
+          "chartdate": {"is_pk": false, "is_fk": false, "relation": "", "description": "The date of the associated procedures. Date does not strictly correlate with seq_num."},
+          "icd_code": {"is_pk": true, "is_fk": false, "relation": "", "description": "The International Coding Definitions (ICD) code. The decimal is not required for interpretation; icd_code '0010' is equivalent to '001.0'."},
+          "icd_version": {"is_pk": true, "is_fk": false, "relation": "", "description": "The version of the ICD coding system: version 9 (ICD-9) or version 10 (ICD-10). ICD-10 codes are more detailed than ICD-9 codes."}
+          }
+      },
+      "provider": {
+        "Description": "A description table for providers in the database referenced by provider_id. As of MIMIC-IV v2.2, this table simply lists all unique provider_id in the database. Note that most tables contain a prefix before provider_id. All columns with a suffix link to provider_id, including: admit_provider_id, enter_provider_id, order_provider_id",
+        "Fields": {
+          "provider_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "provider_id lists all possible identifiers for providers used throughout the database. Provider identifiers follow a consistent pattern: the letter “P”, followed by either three numbers, followed by two letters or two numbers. For example, “P003AB”, “P00102”, “P1248B”, etc. Provider identifiers are randomly generated and do not have any inherent meaning aside from uniquely identifying the same provider across the database."}
+        }
+      },
+      "services": {
+        "Description": "The services table describes the service that a patient was admitted under. While a patient can be physicially located at a given ICU type (say MICU), they are not necessarily being cared for by the team which staffs the MICU. This can happen due to a number of reasons, including bed shortage. The services table should be used if interested in identifying the type of service a patient is receiving in the hospital. For example, if interested in identifying surgical patients, the recommended method is searching for patients admitted under a surgical service. Each service is listed in the table as an abbreviation - this is exactly how the data is stored in the hospital database. For user convenience, we have provided a description of each service type. {'medical_services':{'CMED':{'name':'Cardiac Medical','description':'for non-surgical cardiac related admissions'},'CSURG':{'name':'Cardiac Surgery','description':'for surgical cardiac admissions'},'DENT':{'name':'Dental','description':'for dental/jaw related admissions'},'ENT':{'name':'Ear, Nose, and Throat','description':'conditions primarily affecting these areas'},'EYE':{'name':'Eye Diseases','description':'including subspecialty services in glaucoma, cataract surgery, cornea and external diseases, and neuro-ophthalmology'},'GU':{'name':'Genitourinary','description':'reproductive organs/urinary system'},'GYN':{'name':'Gynecological','description':'female reproductive systems and breasts'},'MED':{'name':'Medical','description':'general service for internal medicine'},'NB':{'name':'Newborn','description':'infants born at the hospital'},'NBB':{'name':'Newborn Baby','description':'infants born at the hospital'},'NMED':{'name':'Neurologic Medical','description':'non-surgical, relating to the brain'},'NSURG':{'name':'Neurologic Surgical','description':'surgical, relating to the brain'},'OBS':{'name':'Obstetrics','description':'concerned with childbirth and the care of women giving birth'},'ORTHO':{'name':'Orthopaedic','description':'surgical, relating to the musculoskeletal system'},'OMED':{'name':'Oncologic Medical','description':'non-surgical, relating to cancer'},'PSURG':{'name':'Plastic','description':'restoration/reconstruction of the human body (including cosmetic or aesthetic)'},'PSYCH':{'name':'Psychiatric','description':'mental disorders relating to mood, behaviour, cognition, or perceptions'},'SURG':{'name':'Surgical','description':'general surgical service not classified elsewhere'},'TRAUM':{'name':'Trauma','description':'injury or damage caused by physical harm from an external source'},'TSURG':{'name':'Thoracic Surgical','description':'surgery on the thorax, located between the neck and the abdomen'},'VSURG':{'name':'Vascular Surgical','description':'surgery relating to the circulatory system'}}}",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "A unique identifier which specifies an individual patient. Any rows associated with a single subject_id pertain to the same individual."},
+          "hadm_id": {"is_pk": true, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id", "description": "An integer identifier which is unique for each patient hospitalization."},
+          "transfertime": {"is_pk": true, "is_fk": false, "relation": "", "description": "The time at which the patient moved from the prev_service (if present) to the curr_service."},
+          "prev_service": {"is_pk": false, "is_fk": false, "relation": "", "description": "The previous service that the patient resides under."},
+          "curr_service": {"is_pk": true, "is_fk": false, "relation": "", "description": "The current service that the patient resides under."}
+      }
+      },
+      "transfers": {
+        "Description": "Detailed information about patients' unit transfers.",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "Unique identifier for each patient across the database"},
+          "hadm_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unique identifier for each patient hospital admission stay"},
+          "transfer_id": {"is_pk": true, "is_fk": false, "relation": "", "description": "Unique identifier for each patient physical location transfer within the hospital"},
+          "eventtype": {"is_pk": false, "is_fk": false, "relation": "", "description": "Type of transfer event that occurred ('ed' for emergency department, 'admit' for hospital admission, 'transfer' for intra-hospital transfer, 'discharge' for hospital discharge)"},
+          "careunit": {"is_pk": false, "is_fk": false, "relation": "", "description": "Type of unit or ward where the patient is physically located (e.g., medical ICU, surgical ICU, medical ward, nursery)"},
+          "intime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Date and time when the patient was transferred into the current care unit from the previous location"},
+          "outtime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Date and time when the patient was transferred out of the current physical location"}
+          }
+      }
+    }
+  }
+,
+
+  "mimiciv_icu": {
+    "Description": "Intensive Care Unit data including monitoring, procedures, medications, and physiological measurements",
+    "Tables": {
+      "caregiver": {
+        "Description": "A description table for the ICU caregivers in the ICU module referenced by caregiver_id. As of MIMIC-IV v2.2, this table simply lists all unique caregiver_id in the database. Note that, in order to distinguish identifiers used in the hospital wide EHR from those used in the ICU information system, we have adopted the nomenclature of “caregivers” for the ICU (caregiver_id and caregivers). For the hospital data in the hosp module, we use the terminology of “providers” (provider_id and providers). However, conceptually, both these sets of identifiers and tables refer to practicing providers at the hospital.",
+        "Fields": {
+          "caregiver_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "caregiver_id lists all possible identifiers for caregivers used in the ICU module. caregiver_id uniquely identifies a single caregiver who documented data in the ICU information system."}
+        }
+      },
+      "chartevents": {
+        "Description": "Table source: MetaVision ICU database. Table purpose: Contains all charted data for all patients. Brief summary: chartevents contains all the charted data available for a patient. During their ICU stay, the primary repository of a patient’s information is their electronic chart. The electronic chart displays patients' routine vital signs and any additional information relevant to their care: ventilator settings, laboratory values, code status, mental status, and so on. As a result, the bulk of information about a patient’s stay is contained in chartevents. Furthermore, even though laboratory values are captured elsewhere (labevents), they are frequently repeated within chartevents. This occurs because it is desirable to display the laboratory values on the patient’s electronic chart, and so the values are copied from the database storing laboratory values to the database storing the chartevents. Important considerations: Some items are duplicated between the labevents and chartevents tables. In cases where there is disagreement between measurements, labevents should be taken as the ground truth.",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "Unique identifier for a patient"},
+          "hadm_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id", "description": "Unique identifier for a patient hospital stay"},
+          "stay_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_icu.icustays.stay_id", "description": "Unique identifier for a patient ward stay"},
+          "caregiver_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unique identifier for a single caregiver who documented data in the ICU information system"},
+          "charttime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Time at which an observation was made, usually the closest proxy to the time the data was actually measured"},
+          "storetime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Time at which an observation was manually input or manually validated by clinical staff"},
+          "itemid": {"is_pk": false, "is_fk": true, "relation": "mimiciv_icu.d_items.itemid", "description": "Identifier for a single measurement type in the database (e.g. 220045 for heart rate)"},
+          "value": {"is_pk": false, "is_fk": false, "relation": "", "description": "Value measured for the concept identified by itemid, may include text descriptions for scores"},
+          "valuenum": {"is_pk": false, "is_fk": false, "relation": "", "description": "Numeric format of value if numeric, null if not numeric"},
+          "valueuom": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unit of measurement for the value, if appropriate"},
+          "warning": {"is_pk": false, "is_fk": false, "relation": "", "description": "Specifies if a warning for this observation was manually documented by the care provider"}
+      }
+      },
+      "datetimeevents": {
+        "Description": "Table source: MetaVision ICU database. Table purpose: Contains all date formatted data.",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "Unique identifier for a patient"},
+          "hadm_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id", "description": "Unique identifier for a patient hospital stay"},
+          "stay_id": {"is_pk": true, "is_fk": true, "relation": "mimiciv_icu.icustays.stay_id", "description": "Unique identifier for a patient ward stay"},
+          "caregiver_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unique identifier for a single caregiver who documented data in the ICU information system"},
+          "charttime": {"is_pk": true, "is_fk": false, "relation": "", "description": "Time at which an observation was charted, usually the closest proxy to the time the data was actually measured"},
+          "storetime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Time at which an observation was manually input or manually validated by a member of the clinical staff"},
+          "itemid": {"is_pk": true, "is_fk": true, "relation": "mimiciv_icu.d_items.itemid", "description": "Identifier for a single measurement type in the database"},
+          "value": {"is_pk": false, "is_fk": false, "relation": "", "description": "The documented date - this is the value that corresponds to the concept referred to by itemid"},
+          "valueuom": {"is_pk": false, "is_fk": false, "relation": "", "description": "The unit of measurement for the value - almost always the text string 'Date'"},
+          "warning": {"is_pk": false, "is_fk": false, "relation": "", "description": "Specifies if a warning for this observation was manually documented by the care provider"}
+      }
+      },
+      "d_items": {
+        "Description": "Table source: Metavision ICU databases. Table purpose: Definition table for all items in the ICU databases. Important considerations: If the linksto column is null, then the data is currently unavailable, but planned for a future release.",
+        "Fields": {
+          "itemid": {"is_pk": true, "is_fk": false, "relation": "", "description": "Unique identifier for each row, serves as an alternate primary key to the table"},
+          "label": {"is_pk": false, "is_fk": false, "relation": "", "description": "Describes the concept which is represented by the itemid"},
+          "abbreviation": {"is_pk": false, "is_fk": false, "relation": "", "description": "Common abbreviation for the label (only available in Metavision)"},
+          "linksto": {"is_pk": false, "is_fk": false, "relation": "", "description": "Provides the table name which the data links to (e.g., 'chartevents' indicates the itemid is contained in CHARTEVENTS)"},
+          "category": {"is_pk": false, "is_fk": false, "relation": "", "description": "Information about the type of data the itemid corresponds to (e.g., 'ABG' for arterial blood gas, 'IV Medication' for intravenous medication)"},
+          "unitname": {"is_pk": false, "is_fk": false, "relation": "", "description": "Specifies the unit of measurement used for the itemid (not always available, may vary or be missing)"},
+          "param_type": {"is_pk": false, "is_fk": false, "relation": "", "description": "Describes the type of data which is recorded: a date, a number or a text field"},
+          "lownormalvalue": {"is_pk": false, "is_fk": false, "relation": "", "description": "Lower bound of the reference range for the measurement (expected normal value)"},
+          "highnormalvalue": {"is_pk": false, "is_fk": false, "relation": "", "description": "Upper bound of the reference range for the measurement (expected normal value)"}
+      }
+      },
+      "icustays": {
+        "Description": "Table source: Hospital database. Table purpose: Defines each ICU stay in the database using STAY_ID. Important considerations: stay_id is a generated identifier that is not based on any raw data identifier. The hospital and ICU databases are not intrinsically linked and so do not have any concept of an ICU encounter identifier. The icustays table is derived from the transfers table. Specifically, it excludes rows in transfers where the ward is not an ICU. Multiple consecutive icu stay entries from transfers are merged into a single entry in transfers. Heart rate measurements are used to determine if an icu stay is valid. If the heart rate measurement for an icu stay in transfers is not available, the icu stay will not be included in icustays (~5%).",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "Unique identifier for a patient"},
+          "hadm_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id", "description": "Unique identifier for a patient hospital stay"},
+          "stay_id": {"is_pk": true, "is_fk": false, "relation": "", "description": "Unique identifier for a patient ward stay"},
+          "first_careunit": {"is_pk": false, "is_fk": false, "relation": "", "description": "First ICU type in which the patient was cared for"},
+          "last_careunit": {"is_pk": false, "is_fk": false, "relation": "", "description": "Last ICU type in which the patient was cared for"},
+          "intime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Date and time the patient was transferred into the ICU"},
+          "outtime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Date and time the patient was transferred out of the ICU"},
+          "los": {"is_pk": false, "is_fk": false, "relation": "", "description": "Length of stay for the patient for the given ICU stay, measured in fractional days"}
+      }
+      },
+      "ingredientevents": {
+          "Description": "Table source: MetaVision ICU database. Table purpose: Ingredients contained within inputs data for patients. Important considerations: In the source data, there is no concept of a volume in the database: only a rate. All rows are recorded with a starttime and an endtime. The amount in this table is derived from the rate column, and provided for convenience. An exception is bolus administrations: these are listed as ending one minute after they started, i.e. endtime: starttime + 1 minute, and they do not have a rate.",
+          "Fields": {
+              "subject_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unique identifier for a patient"},
+              "hadm_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unique identifier for a patient hospital stay"},
+              "stay_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unique identifier for a patient ICU stay"},
+              "caregiver_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unique identifier for a single caregiver who documented data in the ICU information system"},
+              "starttime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Start time of the event"},
+              "endtime": {"is_pk": false, "is_fk": false, "relation": "", "description": "End time of the event"},
+              "storetime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Time at which an observation was manually input or manually validated by clinical staff"},
+              "itemid": {"is_pk": false, "is_fk": false, "relation": "", "description": "Identifier for a single measurement type in the database (e.g. norepinephrine)"},
+              "amount": {"is_pk": false, "is_fk": false, "relation": "", "description": "Amount of a drug or substance administered to the patient between starttime and endtime"},
+              "amountuom": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unit of measurement for the amount"},
+              "rate": {"is_pk": false, "is_fk": false, "relation": "", "description": "Rate at which the drug or substance was administered to the patient between starttime and endtime"},
+              "rateuom": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unit of measurement for the rate"},
+              "orderid": {"is_pk": false, "is_fk": false, "relation": "", "description": "Links multiple items contained in the same solution together"},
+              "linkorderid": {"is_pk": false, "is_fk": false, "relation": "", "description": "Links the same order across multiple instantiations when order parameters change"},
+              "statusdescription": {"is_pk": false, "is_fk": false, "relation": "", "description": "Ultimate status of the item indicating why delivery ended (Changed, Paused, FinishedRunning, Stopped, Rewritten, Flushed)"},
+              "originalamount": {"is_pk": false, "is_fk": false, "relation": "", "description": "Amount of the compound contained in the bag at starttime"},
+              "originalrate": {"is_pk": false, "is_fk": false, "relation": "", "description": "Original rate input by the care provider (may differ from actual delivered rate)"}
+          }
+          },
+      "inputevents": {
+        "Description": "Table source: MetaVision ICU database. Table purpose: Input data for patients. Important considerations: For Metavision data, there is no concept of a volume in the database: only a rate. All inputs are recorded with a starttime and an endtime. As a result, the volumes in the database for Metavision patients are derived from the rates. Furthermore, exact start and stop times for the drugs are easily deducible. A bolus will be listed as ending one minute after it started, i.e. endtime: starttime + 1 minute",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "Unique identifier for a patient"},
+          "hadm_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id", "description": "Unique identifier for a patient hospital stay"},
+          "stay_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_icu.icustays.stay_id", "description": "Unique identifier for a patient ICU stay"},
+          "caregiver_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unique identifier for a single caregiver who documented data in the ICU information system"},
+          "starttime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Start time of an input/output event"},
+          "endtime": {"is_pk": false, "is_fk": false, "relation": "", "description": "End time of an input/output event"},
+          "storetime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Time at which an observation was manually input or manually validated by clinical staff"},
+          "itemid": {"is_pk": true, "is_fk": true, "relation": "mimiciv_icu.d_items.itemid", "description": "Identifier for a single measurement type in the database, corresponds to an instantiation of the same measurement"},
+          "amount": {"is_pk": false, "is_fk": false, "relation": "", "description": "Amount of a drug or substance administered to the patient between starttime and endtime"},
+          "amountuom": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unit of measurement for the amount field"},
+          "rate": {"is_pk": false, "is_fk": false, "relation": "", "description": "Rate at which the drug or substance was administered to the patient between starttime and endtime"},
+          "rateuom": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unit of measurement for the rate field"},
+          "orderid": {"is_pk": true, "is_fk": false, "relation": "", "description": "Links multiple items contained in the same solution together"},
+          "linkorderid": {"is_pk": false, "is_fk": false, "relation": "", "description": "Links the same order across multiple instantiations when order parameters change"},
+          "ordercategoryname": {"is_pk": false, "is_fk": false, "relation": "", "description": "Higher level information about the order category, represents the type of administration"},
+          "secondaryordercategoryname": {"is_pk": false, "is_fk": false, "relation": "", "description": "Secondary category information about the medication/solution order"},
+          "ordercomponenttypedescription": {"is_pk": false, "is_fk": false, "relation": "", "description": "Describes the role of the substance in the solution (main order parameter, additive, or mixed solution)"},
+          "ordercategorydescription": {"is_pk": false, "is_fk": false, "relation": "", "description": "Description of the order category the medication/solution is part of"},
+          "patientweight": {"is_pk": false, "is_fk": false, "relation": "", "description": "Patient weight in kilograms"},
+          "totalamount": {"is_pk": false, "is_fk": false, "relation": "", "description": "Total amount of fluid in the bag containing the solution for IV administrations"},
+          "totalamountuom": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unit of measurement for the totalamount field"},
+          "isopenbag": {"is_pk": false, "is_fk": false, "relation": "", "description": "Indicates whether the order was from an open bag"},
+          "continueinnextdept": {"is_pk": false, "is_fk": false, "relation": "", "description": "Indicates if the order continued into the next department when patient was transferred"},
+          "statusdescription": {"is_pk": false, "is_fk": false, "relation": "", "description": "Ultimate status of the item indicating why delivery ended (Changed, Paused, FinishedRunning, Stopped, Flushed)"},
+          "originalamount": {"is_pk": false, "is_fk": false, "relation": "", "description": "Amount of drug contained in the bag at starttime, represents leftover amount if rate was changed"},
+          "originalrate": {"is_pk": false, "is_fk": false, "relation": "", "description": "Original rate input by care provider, may differ from actual delivered rate"}
+      }
+      },
+      "outputevents": {
+        "Description": "Table source: MetaVision ICU database. Table purpose: Output data for patients.",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "Unique identifier for a patient"},
+          "hadm_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id", "description": "Unique identifier for a patient hospital stay"},
+          "stay_id": {"is_pk": true, "is_fk": true, "relation": "mimiciv_icu.icustays.stay_id", "description": "Unique identifier for a patient ICU stay"},
+          "caregiver_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Uniquely identifies a single caregiver who documented data in the ICU information system"},
+          "charttime": {"is_pk": true, "is_fk": false, "relation": "", "description": "Time of an output event"},
+          "storetime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Time at which an observation was manually input or manually validated by a member of the clinical staff"},
+          "itemid": {"is_pk": true, "is_fk": true, "relation": "mimiciv_icu.d_items.itemid", "description": "Identifier for a single measurement type in the database. Each row associated with one itemid corresponds to an instantiation of the same measurement"},
+          "value": {"is_pk": false, "is_fk": false, "relation": "", "description": "Amount of a substance at the charttime (when the exact start time is unknown, but usually up to an hour before)"},
+          "valueuom": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unit of measurement for the value field"}
+      }
+      },
+      "procedureevents": {
+        "Description": "Table source: MetaVision ICU database. Table purpose: Contains procedures for patients. Important considerations: This table is not a required documentation field during routine care. As a result, existence of procedures here indicates their presence, but absence does not indicate the procedure was not conducted. The consistency of documentation varies by the type of procedure. For example, invasive ventilation tends to be documented, whereas non-invasive documentation is less consistently documented.",
+        "Fields": {
+          "subject_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.patients.subject_id", "description": "Unique identifier for a patient"},
+          "hadm_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_hosp.admissions.hadm_id", "description": "Unique identifier for a patient hospital stay"},
+          "stay_id": {"is_pk": false, "is_fk": true, "relation": "mimiciv_icu.icustays.stay_id", "description": "Unique identifier for a patient ICU stay"},
+          "caregiver_id": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unique identifier for a single caregiver who documented data in the ICU information system"},
+          "starttime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Start time of an event"},
+          "endtime": {"is_pk": false, "is_fk": false, "relation": "", "description": "End time of an event"},
+          "storetime": {"is_pk": false, "is_fk": false, "relation": "", "description": "Time when the event was recorded in the system"},
+          "itemid": {"is_pk": false, "is_fk": true, "relation": "mimiciv_icu.d_items.itemid", "description": "Identifier for a single measurement type in the database, corresponds to a type of measurement"},
+          "value": {"is_pk": false, "is_fk": false, "relation": "", "description": "Duration of the procedure (if applicable)"},
+          "valueuom": {"is_pk": false, "is_fk": false, "relation": "", "description": "Unit of measurement for the value, most frequently 'None', otherwise 'day', 'hour', or 'min'"},
+          "location": {"is_pk": false, "is_fk": false, "relation": "", "description": "Information about where on the patient's body the procedure is taking place"},
+          "locationcategory": {"is_pk": false, "is_fk": false, "relation": "", "description": "Category information about the location on the patient's body where the procedure is taking place"},
+          "orderid": {"is_pk": true, "is_fk": false, "relation": "", "description": "Links procedures to specific physician orders"},
+          "linkorderid": {"is_pk": false, "is_fk": false, "relation": "", "description": "Links to the original order when a procedure was repeated under the same original order"},
+          "ordercategoryname": {"is_pk": false, "is_fk": false, "relation": "", "description": "Higher level information about the medication/solution order category name"},
+          "ordercategorydescription": {"is_pk": false, "is_fk": false, "relation": "", "description": "Higher level description about the medication/solution order category"},
+          "patientweight": {"is_pk": false, "is_fk": false, "relation": "", "description": "Patient weight in kilograms"},
+          "isopenbag": {"is_pk": false, "is_fk": false, "relation": "", "description": "Whether the order was from an open bag"},
+          "continueinnextdept": {"is_pk": false, "is_fk": false, "relation": "", "description": "Indicates if the order continued into the next department when it ended on patient transfer"},
+          "statusdescription": {"is_pk": false, "is_fk": false, "relation": "", "description": "Ultimate status of the procedure (Paused, FinishedRunning, or Stopped)"},
+          "originalamount": {"is_pk": false, "is_fk": false, "relation": "", "description": "Present in the table but has no clear meaning"},
+          "originalrate": {"is_pk": false, "is_fk": false, "relation": "", "description": "Present in the table but has no clear meaning, either 0 or 1 for all records"}
+      }
+      }
+    }
+  }
+}
