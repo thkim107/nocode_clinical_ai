@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  db-connector: 
+    container_name: db-connector
+    hostname: db-connector
+    image: db-connector:260203
+    # restart: always
+    ports:
+      - "8005:8000"
+    # volumes:
+      # - ./volume_storage:/app/data:rw
+      # - .:/app/mcp-servers:ro
+    networks:
+      - research-ai
+    env_file:
+      - .env
+
+networks:
+  research-ai:
+    external: true
+    name: research-ai

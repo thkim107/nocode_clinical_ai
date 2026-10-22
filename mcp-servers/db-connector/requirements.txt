@@ -1,0 +1,3 @@
+mcp>=1.8.0,<2   # 2.x 에서 mcp.server.fastmcp 제거됨(MCPServer 로 개명) — v1 API 유지
+psycopg2-binary>=2.9.0
+pyyaml>=6.0
