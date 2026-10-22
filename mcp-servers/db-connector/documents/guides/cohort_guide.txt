@@ -1,0 +1,67 @@
+# Cohort Definition and Analysis Guide
+
+## 1. Overview
+A cohort is a group of patients who share common characteristics and are followed over time for research purposes. Proper cohort definition is fundamental to observational clinical research.
+
+## 2. Key Concepts
+
+### 2.1 Index Date
+- The anchor date that defines when a patient enters the cohort
+- Examples: diagnosis date, first prescription date, hospital admission date
+
+### 2.2 Inclusion Criteria
+- Conditions that patients must meet to be included
+- Demographics (age, gender)
+- Clinical conditions (diagnosis codes, lab values)
+- Healthcare utilization (number of visits, length of stay)
+
+### 2.3 Exclusion Criteria
+- Conditions that disqualify patients from the cohort
+- Prior conditions that may confound results
+- Missing critical data elements
+
+### 2.4 Observation Period
+- Time window during which patients are observed
+- Baseline period: before index date (for covariates)
+- Follow-up period: after index date (for outcomes)
+
+## 3. Cohort Design Patterns
+
+### 3.1 Disease Cohort
+- Patients with specific diagnosis
+- Consider: first occurrence vs. any occurrence
+- Validate with lab tests or procedures when possible
+
+### 3.2 Treatment Cohort
+- Patients receiving specific treatment
+- New users vs. prevalent users
+- Intent-to-treat vs. as-treated analysis
+
+### 3.3 Outcome Cohort
+- Patients experiencing specific outcome
+- Time-to-event considerations
+- Competing risks
+
+## 4. Best Practices
+
+### 4.1 Cohort Validation
+- Check cohort size and demographics
+- Compare with published literature
+- Clinical expert review
+
+### 4.2 Sensitivity Analysis
+- Vary inclusion/exclusion criteria
+- Test different time windows
+- Assess impact of missing data
+
+### 4.3 Documentation
+- Record all criteria and logic
+- Version control cohort definitions
+- Share phenotype libraries when possible
+
+## 5. Common Pitfalls
+
+- Immortal time bias: misclassifying follow-up time
+- Selection bias: non-representative sample
+- Information bias: misclassification of exposures/outcomes
+- Confounding: unmeasured variables affecting results
