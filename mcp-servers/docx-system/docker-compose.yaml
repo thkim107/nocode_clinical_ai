@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  docx-system:
+    container_name: docx-system
+    hostname: docx-system
+    image: docx-system:260130
+    # restart: always
+    env_file:
+      - .env
+    ports:
+      - "8004:8000"
+    volumes:
+      - ./test-volume:/app/data:rw
+      # - ./services/docx-system:/app/mcp-servers:ro
+    networks:
+      - snuhai
+
+networks:
+  snuhai:
+    external: true
+    name: snuhai
